@@ -20,9 +20,7 @@ return new class extends Migration
             $table->string('ObsUser')->nullable();
             $table->string('ObsRol')->nullable();
             $table->string('ObsSlug')->nullable();
-            $table->tinyInteger('ObsRepeat')->default(0);
             $table->foreignId('FK_ObsVehiculo')->nullable()->constrained('vehiculos', 'ID_Vehiculo');
-            $table->foreignId('FK_ObsSolSer')->nullable()->constrained('solicitudes_servicio', 'ID_SolSer');
             $table->timestamps();
             $table->tinyInteger('DeleteObs')->default(0);
         });

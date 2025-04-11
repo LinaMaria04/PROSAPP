@@ -19,6 +19,7 @@ return new class extends Migration
         $table->decimal('TotalKgAdicional', 10, 2)->nullable();
         $table->decimal('TotalPagar', 12, 2)->nullable();
         $table->string('LiquiServSlug')->nullable();
+        $table->foreignId('FK_TipoPago')->nullable()->constrained('tipo_pago', 'ID_TipoPago');
         $table->timestamps();
         $table->tinyInteger('DeleteLiquiServ')->default(0);
     });

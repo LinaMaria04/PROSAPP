@@ -16,11 +16,14 @@ return new class extends Migration
         $table->date('Fechadepago')->nullable();
         $table->string('Status pago')->nullable();
         $table->foreignId('FK_LiquiServ')->constrained('liquidacion_servicios', 'ID_LiquiServ');
-        $table->string('NombrePago')->nullable();
         $table->string('mediodepago')->nullable();
+        $table->text('observacion')->nullable();
         $table->string('url_comprobante')->nullable();
+        $table->string('url_recibo')->nullable();
         $table->string('PagoSlug')->nullable();
+        $table->foreignId('FK_Cliente')->constrained('clientes', 'Id_Cliente');
         $table->timestamps();
+        $table->tinyInteger('DeletePago')->default(0);
     });
 }
 

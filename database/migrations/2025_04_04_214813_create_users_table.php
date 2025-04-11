@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id('Id_User'); // Clave primaria
         $table->string('Nombre');
         $table->string('Email')->unique();
-        $table->timestamp('Verificación Email')->nullable();
+        $table->timestamp('VerificaciónEmail')->nullable();
         $table->string('Contraseña');
         $table->rememberToken(); // crea campo varchar(100) para token
         $table->string('UserSlug')->nullable();

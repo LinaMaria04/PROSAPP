@@ -19,7 +19,6 @@ return new class extends Migration
         $table->string('SolResEmbalaje')->nullable();
         $table->string('SolResSlug')->nullable();
         $table->foreignId('FK_Residuo')->nullable()->constrained('residuos', 'ID_Respel');
-        $table->foreignId('FK_Sede')->nullable()->constrained('sedes', 'Id_Sede');
         $table->timestamps();
         $table->tinyInteger('DeleteSolRes')->default(0);
     });

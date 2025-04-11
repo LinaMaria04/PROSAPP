@@ -13,6 +13,7 @@ return new class extends Migration
 {
     Schema::create('sedes', function (Blueprint $table) {
         $table->id('Id_Sede');
+        $table->foreignId('FK_Persona')->nullable()->constrained('personas', 'Id_Peronsa');
         $table->string('NombreSede');
         $table->string('Direccion');
         $table->string('SedeMapAddressSearch')->nullable();

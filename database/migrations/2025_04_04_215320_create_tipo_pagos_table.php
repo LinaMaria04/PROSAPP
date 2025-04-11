@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipo_pagos', function (Blueprint $table) {
-            $table->id();
+            $table->id('ID_TipoPago');
+            $table->string('NombrePago');
+            $table->string('Descripcion');
+            $table->string('TipoPagoSlug');
             $table->timestamps();
+            $table->tinyInteger('DeleteTipoPago')->default(0);
         });
     }
 

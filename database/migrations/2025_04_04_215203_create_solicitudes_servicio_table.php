@@ -21,6 +21,13 @@ return new class extends Migration
             $table->tinyInteger('SolSerFactura')->default(0);
             $table->integer('NumFactura')->nullable();
             $table->integer('CalificacionServ')->nullable();
+            $table->foreignId('FK_Sede')->nullable()->constrained('sedes', 'Id_Sede');
+            $table->foreignId('FK_Cliente')->nullable()->constrained('clientes', 'Id_Cliente');
+            $table->decimal('Total_KG')->nullable();
+            $table->foreignId('FK_LiquiServ')->nullable()->constrained('liquidacion_servicios', 'ID_LiquiServ');
+            $table->integer('NumFactura')->nullable();
+            $table->integer('CalificacionServ')->nullable();
+
             $table->timestamps();
             $table->tinyInteger('DeleteSolSer')->default(0);
         });

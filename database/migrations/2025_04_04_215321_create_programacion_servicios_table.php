@@ -18,8 +18,11 @@ return new class extends Migration
             $table->foreignId('FK_Vehiculo')->nullable()->constrained('vehiculos', 'ID_Vehiculo');
             $table->foreignId('FK_Conductor')->nullable()->constrained('personas', 'Id_Peronsa');
             $table->foreignId('FK_Servicio')->nullable()->constrained('solicitudes_servicio', 'ID_SolSer');
-            $table->timestamp('ProgDateRecoleccion')->nullable();
+            $table->foreignId('FK_SedeServicio')->nullable()->constrained('sedes', 'Id_Sede');
+            $table->decimal('SedeMapLat', 10, 7)->nullable();
+            $table->decimal('SedeMapLong', 10, 7)->nullable();
             $table->string('ProgServSlug')->nullable();
+            $table->string('Observacion')->nullable();
             $table->timestamps();
             $table->tinyInteger('DeletProgServ')->default(0);
         });
