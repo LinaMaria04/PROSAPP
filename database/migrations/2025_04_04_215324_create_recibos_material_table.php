@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('recibos_material', function (Blueprint $table) {
             $table->id('ID_Firmas');
+            $table->integer('FK_Solser');
+            $table->integer('FK_Gener');
+            $table->integer('FK_SGener');
             $table->string('FirmaCliente')->nullable();
             $table->string('Nombrefuncionario')->nullable();
             $table->string('SlugFirmas')->nullable();
-            $table->tinyInteger('visible')->default(1);
+            $table->integer('Cedula')->nullable();
+            $table->string('Observaciones');
             $table->timestamps();
         });
     }

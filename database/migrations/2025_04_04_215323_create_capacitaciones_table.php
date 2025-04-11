@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('capacitaciones', function (Blueprint $table) {
-            $table->id();
+            $table->id('id');
             $table->string('titulo');
             $table->string('descripcion')->nullable();
-            $table->tinyInteger('estado')->default(1);
+            $table->tinyInteger('visible')->default(1);
             $table->timestamps();
         });
     }

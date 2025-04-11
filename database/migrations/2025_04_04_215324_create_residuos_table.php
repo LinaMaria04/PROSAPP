@@ -23,12 +23,16 @@ return new class extends Migration
             $table->string('RespelHojaSeguridad')->nullable();
             $table->string('RespelTarj')->nullable();
             $table->string('RespelSlug')->nullable();
+            $table->string('RespelStatus');
             $table->foreignId('FK_RespelCoti')->nullable(); // puedes enlazarla después si tienes tabla de cotizaciones
+            $table->string('RespelFoto');
             $table->tinyInteger('SustanciaControlada')->default(0);
             $table->tinyInteger('SustanciaControladaTipo')->nullable();
             $table->string('SustanciaControladaNombre')->nullable();
             $table->string('SustanciaControladaDocumento')->nullable();
             $table->tinyInteger('RespelDeclaracion')->default(0);
+            $table->string('RespelStatusDescription');
+            $table->tinyInteger('AceiteUsado');
             $table->timestamps();
             $table->tinyInteger('RespelDelete')->default(0);
         });

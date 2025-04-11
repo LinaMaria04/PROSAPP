@@ -21,7 +21,10 @@ return new class extends Migration
             $table->decimal('Total_prefactura', 12, 2)->default(0);
             $table->string('status_prefactura')->nullable();
             $table->string('orden_compra')->nullable();
+            $table->date('Fecha_Servicio');
+            $table->timestamp('deleted_at');
             $table->timestamps();
+
         });
     }
     
