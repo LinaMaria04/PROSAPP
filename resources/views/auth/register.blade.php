@@ -1,77 +1,104 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
-
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - ProsarApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1565C0, #64B5F6);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+        .register-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .form-control {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(21, 101, 192, 0.25);
+            border-color: #1565C0;
+        }
+        .btn-primary {
+            padding: 0.75rem;
+            background-color: #1565C0;
+            border-color: #1565C0;
+            border-radius: 8px;
+        }
+        .btn-primary:hover {
+            background-color: #0D47A1;
+            border-color: #0D47A1;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #333;
+        }
+        .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h2 class="mb-3">ProsarApp</h2>
+            <p class="text-muted">Crea tu cuenta</p>
         </div>
+        <form method="POST" action="{{ route('register.submit') }}">
+            @csrf
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre completo</label>
+                <input type="text" class="form-control @error('name') is-invalid @enderror" 
+                       id="name" name="name" value="{{ old('name') }}" required autofocus>
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                       id="email" name="email" value="{{ old('email') }}" required>
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                       id="password" name="password" required>
+                @error('password')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
+                <input type="password" class="form-control" 
+                       id="password_confirmation" name="password_confirmation" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+            <div class="text-center mt-3">
+                <a href="{{ route('login') }}" class="text-decoration-none" style="color: #1565C0;">
+                    ¿Ya tienes una cuenta? Inicia sesión
+                </a>
+            </div>
+        </form>
     </div>
-</div>
-@endsection
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
