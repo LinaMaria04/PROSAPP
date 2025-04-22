@@ -3,10 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\RoleController;
 
 /*Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });*/
+
+// Ruta principal - Redirige al login
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -35,6 +38,9 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de Personal
     Route::resource('personal', PersonalController::class);
+    
+    // Rutas de Roles
+    Route::resource('roles', RoleController::class);
 });
 
 require __DIR__.'/auth.php';

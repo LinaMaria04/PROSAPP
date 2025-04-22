@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <title>Registro - ProsarApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -65,7 +66,7 @@
             <div class="mb-3">
                 <label for="name" class="form-label">Nombre completo</label>
                 <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                       id="name" name="name" value="{{ old('name') }}" required autofocus>
+                       id="name" name="name" value="{{ old('name') }}" required autofocus autocomplete="name">
                 @error('name')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -73,7 +74,7 @@
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
                 <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                       id="email" name="email" value="{{ old('email') }}" required>
+                       id="email" name="email" value="{{ old('email') }}" required autocomplete="email">
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -81,7 +82,7 @@
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
                 <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                       id="password" name="password" required>
+                       id="password" name="password" required autocomplete="new-password">
                 @error('password')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -89,7 +90,7 @@
             <div class="mb-3">
                 <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
                 <input type="password" class="form-control" 
-                       id="password_confirmation" name="password_confirmation" required>
+                       id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
             </div>
             <button type="submit" class="btn btn-primary w-100">Registrarse</button>
             <div class="text-center mt-3">

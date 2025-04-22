@@ -1,0 +1,10 @@
+<?php
+// Este es un archivo PHP que generará un favicon básico
+header('Content-Type: image/x-icon');
+$im = imagecreatetruecolor(32, 32);
+$blue = imagecolorallocate($im, 21, 101, 192);
+imagefill($im, 0, 0, $blue);
+imagepng($im);
+imagedestroy($im);
+?>
+
