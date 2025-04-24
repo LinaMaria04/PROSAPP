@@ -8,7 +8,7 @@ use App\Http\Controllers\PersonalController;
     return ['Laravel' => app()->version()];
 });*/
 Route::get('/', function () {
-    return view('auth.login');
+    return view('home');
 });
 
 // Rutas de autenticación
@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Rutas de Personal
-    Route::resource('personal', PersonalController::class);
+    Route::resource('/personal', PersonalController::class);
 });
 
 require __DIR__.'/auth.php';
@@ -42,3 +42,4 @@ require __DIR__.'/auth.php';
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::resource('/personal', PersonalController::class);
