@@ -121,6 +121,17 @@ class RegisterController extends Controller
     public function storeStep1(Request $request)
     {
         try {
+            $messages = [
+                'ClientDocumento.unique' => 'Este número de documento ya está registrado en nuestro sistema.',
+                'ClientDocumento.required' => 'El número de documento es obligatorio.',
+                'ClientDocType.required' => 'El tipo de documento es obligatorio.',
+                'razon_social.required' => 'La razón social es obligatoria.',
+                'direccion.required' => 'La dirección es obligatoria.',
+                'telefono.required' => 'El teléfono es obligatorio.',
+                'FK_TipoComercio.required' => 'El tipo de comercio es obligatorio.',
+                'FK_TipoComercio.exists' => 'El tipo de comercio seleccionado no es válido.'
+            ];
+
             $validatedData = $request->validate([
                 'ClientDocType' => ['required', 'string'],
                 'ClientDocumento' => ['required', 'string', 'unique:clientes'],
@@ -128,7 +139,7 @@ class RegisterController extends Controller
                 'direccion' => ['required', 'string'],
                 'telefono' => ['required', 'string'],
                 'FK_TipoComercio' => ['required', 'exists:tipo_comercio,Id_Comercio'],
-            ]);
+            ], $messages);
 
             // Almacenar datos en sesión
             $request->session()->put('register_step1', $validatedData);
@@ -195,10 +206,17 @@ class RegisterController extends Controller
 
             // Validar datos del paso 2
             try {
+                $messages = [
+                    'Email.required' => 'El correo electrónico es obligatorio.',
+                    'Email.email' => 'Por favor, ingrese un correo electrónico válido.',
+                    'Email.unique' => 'Este correo electrónico ya está registrado en nuestro sistema.',
+                    'Email.max' => 'El correo electrónico no puede tener más de :max caracteres.'
+                ];
+
                 $validatedData = $request->validate([
                     'Email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                     'Contraseña' => ['required', 'confirmed', Rules\Password::defaults()],
-                ]);
+                ], $messages);
             } catch (ValidationException $e) {
                 return response()->json([
                     'success' => false,
@@ -249,7 +267,8 @@ class RegisterController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Usuario y cliente registrados exitosamente',
+                    'message' => 'Gracias por registrarte en ProsarApp',
+                    'verification_required' => true,
                     'data' => [
                         'user' => $user,
                         'cliente' => $cliente
