@@ -75,19 +75,52 @@
                             @endif
 
                             <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre completo</label>
-                                <input type="text" class="form-control @error('nombre') is-invalid @enderror" 
-                                       id="nombre" name="nombre" value="{{ old('nombre', $persona->nombre ?? '') }}" required>
-                                @error('nombre')
+                            <label for="primernombre" class="form-label">Primer Nombre</label>
+                                <input type="text" class="form-control @error('primernombre') is-invalid @enderror" 
+                                       id="primernombre" name="primernombre" value="{{ old('primernombre', $persona->nombre ?? '') }}" required>
+                                @error('primernombre')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" name="email" value="{{ old('email', $persona->email ?? '') }}" required>
-                                @error('email')
+                                <label for="segundonombre" class="form-label">Segundo Nombre</label>
+                                <input type="text" class="form-control @error('segundonombre') is-invalid @enderror" 
+                                       id="segundonombre" name="segundonombre" value="{{ old('segundonombre', $persona->nombre ?? '') }}" required>
+                                @error('segundonombre')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="apellido" class="form-label">Apellido</label>
+                                <input type="text" class="form-control @error('apellido') is-invalid @enderror" 
+                                       id="apellido" name="apellido" value="{{ old('apellido', $persona->nombre ?? '') }}" required>
+                                @error('apellido')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tipdoc" class="form-label">Tipo de Documento</label>
+                                <select class="form-select @error('tipdoc') is-invalid @enderror" 
+                                        id="tipdoc" name="tipdoc" required>
+                                    <option value="">Seleccione un Tipo de Documento</option>
+                                    <option value="CC" {{ (old('tipdoc', $persona->PersDocType ?? '') == 'CC') ? 'selected' : '' }}>CC</option>
+                                    <option value="TI" {{ (old('tipdoc', $persona->PersDocType ?? '') == 'TI') ? 'selected' : '' }}>TI</option>
+                                    <option value="CE" {{ (old('tipdoc', $persona->PersDocType ?? '') == 'CE') ? 'selected' : '' }}>CE</option>
+
+                                </select>
+                                @error('tipdoc')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="numdoc" class="form-label">Número de Documento</label>
+                                <input type="text" class="form-control @error('numdoc') is-invalid @enderror" 
+                                       id="numdoc" name="numdoc" value="{{ old('numdoc', $persona->nombre ?? '') }}" required>
+                                @error('numdoc')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -100,22 +133,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
-                            <div class="mb-3">
-                                <label for="departamento" class="form-label">Departamento</label>
-                                <select class="form-select @error('departamento') is-invalid @enderror" 
-                                        id="departamento" name="departamento" required>
-                                    <option value="">Seleccione un departamento</option>
-                                    <option value="RRHH" {{ (old('departamento', $persona->departamento ?? '') == 'RRHH') ? 'selected' : '' }}>RRHH</option>
-                                    <option value="TI" {{ (old('departamento', $persona->departamento ?? '') == 'TI') ? 'selected' : '' }}>TI</option>
-                                    <option value="Ventas" {{ (old('departamento', $persona->departamento ?? '') == 'Ventas') ? 'selected' : '' }}>Ventas</option>
-                                    <option value="Marketing" {{ (old('departamento', $persona->departamento ?? '') == 'Marketing') ? 'selected' : '' }}>Marketing</option>
-                                </select>
-                                @error('departamento')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">
                                     {{ isset($persona) ? 'Actualizar' : 'Guardar' }}
@@ -126,8 +143,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

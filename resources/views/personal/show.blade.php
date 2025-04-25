@@ -67,34 +67,40 @@
 
                         <div class="detail-item">
                             <div class="detail-label">Nombre completo</div>
-                            <div>{{ $persona->nombre }}</div>
+                            <div>{{ $persona->PrimerNombre}} {{ $persona->SegundoNombre}} {{$persona->Apellidos}}</div>
                         </div>
 
                         <div class="detail-item">
-                            <div class="detail-label">Email</div>
-                            <div>{{ $persona->email }}</div>
+                            <div class="detail-label">Tipo de Documento</div>
+                            <div>{{ $persona->PersDocType}}</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Numero de Documento</div>
+                            <div>{{ $persona->PersDocNumber}}</div>
                         </div>
 
                         <div class="detail-item">
                             <div class="detail-label">Teléfono</div>
-                            <div>{{ $persona->telefono ?? 'No especificado' }}</div>
+                            <div>{{ $persona->Telefono ?? 'No especificado' }}</div>
                         </div>
 
                         <div class="detail-item">
-                            <div class="detail-label">Departamento</div>
-                            <div>{{ $persona->departamento }}</div>
+                            <div class="detail-label">Cliente</div>
+                            <div>{{ $persona->FK_PersCliente }}</div>
                         </div>
 
                         <div class="detail-item">
                             <div class="detail-label">Fecha de registro</div>
-                            <div>{{ $persona->created_at->format('d/m/Y H:i') }}</div>
+                            <div>{{ $persona->created_at}}</div>
                         </div>
 
                         <div class="mt-4">
-                            <a href="{{ route('personal.edit', $persona->id) }}" class="btn btn-warning me-2">
+                            <a href="/personal/{{$persona->PersSlug}}/edit" class="btn btn-warning me-2">
                                 <i class='bx bx-edit'></i> Editar
                             </a>
-                            <form action="{{ route('personal.destroy', $persona->id) }}" method="POST" class="d-inline">
+                            {{--<form action="{{ route('personal.destroy', $persona->id) }}" method="POST" class="d-inline">--}}
+                                <form action="" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este registro?')">
@@ -110,4 +116,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
