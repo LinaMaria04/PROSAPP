@@ -11,6 +11,13 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('home');
 
+// Rutas de Personal (sin protección temporalmente)
+Route::resource('personal', PersonalController::class);
+Route::prefix('personal')->group(function () {
+    Route::get('/search', [PersonalController::class, 'search'])->name('personal.search');
+    Route::get('/export', [PersonalController::class, 'export'])->name('personal.export');
+});
+
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {
     // Rutas de login
@@ -41,14 +48,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Recursos
+    /* Rutas de personal movidas arriba sin protección temporalmente
     Route::resource('personal', PersonalController::class);
-    Route::resource('roles', RoleController::class);
-
-    // Rutas adicionales para personal
     Route::prefix('personal')->group(function () {
         Route::get('/search', [PersonalController::class, 'search'])->name('personal.search');
         Route::get('/export', [PersonalController::class, 'export'])->name('personal.export');
     });
+    */
+    
+    Route::resource('roles', RoleController::class);
 
     // Rutas adicionales para roles
     Route::prefix('roles')->group(function () {
