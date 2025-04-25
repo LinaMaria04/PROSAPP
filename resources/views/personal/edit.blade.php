@@ -56,8 +56,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title mb-4">{{ isset($persona) ? 'Editar Personal' : 'Crear Personal' }}</h4>
-
+                        <h4 class="card-title mb-4">Editar Personal</h4>
                         @if($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
@@ -67,8 +66,7 @@
                                 </ul>
                             </div>
                         @endif
-
-                        <form action="{{ isset($persona) ? route('personal.update', $persona->id) : route('personal.store') }}" method="POST">
+                        <form role="form" action="{{ route('personal.update', $persona->PersSlug) }}" method="POST" enctype="multipart/form-data" data-bs-toggle="validator" class="form">
                             @csrf
                             @if(isset($persona))
                                 @method('PUT')
@@ -77,7 +75,7 @@
                             <div class="mb-3">
                                 <label for="primernombre" class="form-label">Primer Nombre</label>
                                 <input type="text" class="form-control @error('primernombre') is-invalid @enderror" 
-                                       id="primernombre" name="primernombre" value="{{ old('primernombre', $persona->nombre ?? '') }}" required>
+                                       id="primernombre" name="primernombre" value="{{ old('primernombre', $persona->PrimerNombre ?? '') }}" required>
                                 @error('primernombre')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -86,7 +84,7 @@
                             <div class="mb-3">
                                 <label for="segundonombre" class="form-label">Segundo Nombre</label>
                                 <input type="text" class="form-control @error('segundonombre') is-invalid @enderror" 
-                                       id="segundonombre" name="segundonombre" value="{{ old('segundonombre', $persona->nombre ?? '') }}" required>
+                                       id="segundonombre" name="segundonombre" value="{{ old('segundonombre', $persona->SegundoNombre ?? '') }}" required>
                                 @error('segundonombre')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -95,7 +93,7 @@
                             <div class="mb-3">
                                 <label for="apellido" class="form-label">Apellido</label>
                                 <input type="text" class="form-control @error('apellido') is-invalid @enderror" 
-                                       id="apellido" name="apellido" value="{{ old('apellido', $persona->nombre ?? '') }}" required>
+                                       id="apellido" name="apellido" value="{{ old('apellido', $persona->Apellidos ?? '') }}" required>
                                 @error('apellido')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -118,7 +116,7 @@
                             <div class="mb-3">
                                 <label for="numdoc" class="form-label">Número de Documento</label>
                                 <input type="text" class="form-control @error('numdoc') is-invalid @enderror" 
-                                       id="numdoc" name="numdoc" value="{{ old('numdoc', $persona->nombre ?? '') }}" required>
+                                       id="numdoc" name="numdoc" value="{{ old('numdoc', $persona->PersDocNumber ?? '') }}" required>
                                 @error('numdoc')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -127,7 +125,7 @@
                             <div class="mb-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control @error('telefono') is-invalid @enderror" 
-                                       id="telefono" name="telefono" value="{{ old('telefono', $persona->telefono ?? '') }}">
+                                       id="telefono" name="telefono" value="{{ old('telefono', $persona->Telefono ?? '') }}">
                                 @error('telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

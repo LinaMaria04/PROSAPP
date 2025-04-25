@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Personal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Personal; 
 
 class PersonalController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $persona = Personal::all();
-        return view('personal.index', compact('persona'));
-    }
+    public function index(){
+
+        $personal = DB::table('personas')
+            ->where('DeletePersona', 0)
+            ->orderBy('PrimerNombre', 'asc')
+            ->paginate(10);
+
+        return view('personal.index', compact('personal'));
+
+    }    
 
     /**
      * Show the form for creating a new resource.
@@ -29,60 +35,76 @@ class PersonalController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required|email|unique:personal',
-            'telefono' => 'required'
-        ]);
+        //return $request;
+        $persona = new Personal();
+        $persona->PersDocType = $request->tipdoc;
+        $persona->PersDocNumber = $request->numdoc;
+        $persona->PrimerNombre = $request->primernombre;
+        $persona->SegundoNombre = $request->segundonombre;
+        $persona->Apellidos = $request->apellido;
+        $persona->Telefono = $request->telefono;
+        $persona->FK_PersCliente = 1;
+        $persona->PersSlug = hash('sha256', rand().time().$request->apellido);
+        $persona->DeletePersona = 0;
+        $persona->save();
 
-        Personal::create($request->all());
-        return redirect()->route('personal.index')
-            ->with('success', 'Personal creado exitosamente.');
+        return redirect()->route('personal.index')->with('success', 'Persona creada correctamente.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Personal $personal)
+    public function show(string $id)
     {
-        $persona = $personal;
+        $persona = DB::table('personas')
+            ->where('PersSlug', $id)
+            ->first();
+
+        //return $persona;    
         return view('personal.show', compact('persona'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Personal $personal)
+    public function edit(string $id)
     {
-        $persona = $personal;
+        $persona = DB::table('personas')
+        ->where('PersSlug', $id)
+        ->first();
+
         return view('personal.edit', compact('persona'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Personal $personal)
+    public function update(Request $request, string $id)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required|email|unique:personal,email,' . $personal->id,
-            'telefono' => 'required'
-        ]);
-
-        $personal->update($request->all());
-        return redirect()->route('personal.index')
-            ->with('success', 'Personal actualizado exitosamente.');
+    
+        DB::table('personas')
+            ->where('PersSlug', $id)
+            ->update([
+                'PersDocType' => $request->tipdoc,
+                'PersDocNumber' => $request->numdoc,
+                'PrimerNombre' => $request->primernombre,
+                'SegundoNombre' => $request->segundonombre,
+                'Apellidos' => $request->apellido,
+                'Telefono' => $request->telefono
+            ]);
+        return redirect()->route('personal.index')->with('success', 'Persona actualizada correctamente.');
+        
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Personal $personal)
+    public function destroy(string $id)
     {
-        $personal->delete();
-        return redirect()->route('personal.index')
-            ->with('success', 'Personal eliminado exitosamente.');
+       $persona = Personal::where('PersSlug', $id)->first();
+       $persona->DeletePersona = 1;
+       $persona->save();
+
+       return redirect()->route('personal.index')->with('success', 'Persona eliminada correctamente.');
     }
 }
