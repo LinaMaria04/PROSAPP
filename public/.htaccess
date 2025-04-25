@@ -13,9 +13,6 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Force PHP to handle Blade files
-    AddType application/x-httpd-php .php .blade.php
-
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
@@ -26,8 +23,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-
-# Ensure PHP handles Blade files
-<FilesMatch ".+\.blade.php$">
-    SetHandler application/x-httpd-php
-</FilesMatch>

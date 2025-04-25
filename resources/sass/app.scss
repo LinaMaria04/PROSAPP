@@ -1,0 +1,36 @@
+// Variables
+$primary: #1565C0;
+$secondary: #64B5F6;
+
+// Importar Bootstrap
+@import 'bootstrap';
+
+// Estilos personalizados
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+.navbar {
+    background: linear-gradient(135deg, $primary, $secondary);
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+    background-color: $primary;
+    border-color: $primary;
+}
+
+.btn-primary:hover {
+    background-color: darken($primary, 10%);
+    border-color: darken($primary, 10%);
+} 

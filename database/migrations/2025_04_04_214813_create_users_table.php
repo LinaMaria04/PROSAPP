@@ -10,22 +10,22 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('users', function (Blueprint $table) {
-        $table->id('Id_User'); // Clave primaria
-        $table->string('Nombre');
-        $table->string('Email')->unique();
-        $table->timestamp('VerificaciónEmail')->nullable();
-        $table->string('Contraseña');
-        $table->rememberToken(); // crea campo varchar(100) para token
-        $table->string('UserSlug')->nullable();
-        $table->string('UsRol')->nullable(); // Puedes hacer FK con tabla roles si deseas
-        $table->foreignId('FK_UserPersona')->nullable()->constrained('personas', 'Id_Peronsa');
-        $table->timestamps(); // created_at y updated_at
-        $table->integer('DeleteUser')->default(0);
-    });
-}
-
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id('Id_User'); // Clave primaria
+            $table->string('Nombre');
+            $table->string('Email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('Contraseña');
+            $table->string('UserSlug')->nullable();
+            $table->string('UsRol')->nullable(); // Puedes hacer FK con tabla roles si deseas
+            $table->boolean('is_active')->default(false);
+            $table->string('verification_token')->nullable();
+            $table->rememberToken(); // crea campo varchar(100) para token
+            $table->timestamps(); // created_at y updated_at
+            $table->integer('DeleteUser')->default(0);
+        });
+    }
 
     /**
      * Reverse the migrations.

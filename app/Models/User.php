@@ -13,14 +13,33 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'users';
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'Id_User';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'Nombre',
+        'Email',
+        'Contraseña',
+        'UserSlug',
+        'UsRol',
+        'is_active',
+        'verification_token',
+        'FK_UserPersona'
     ];
 
     /**
@@ -29,7 +48,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
+        'Contraseña',
         'remember_token',
     ];
 
@@ -42,7 +61,30 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'Contraseña' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->Contraseña;
+    }
+
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class, 'FK_ClienteUser', 'Id_User');
+    }
+
+    // Método para simular que el email está verificado
+    public function markEmailAsVerified()
+    {
+        $this->email_verified_at = now();
+        $this->save();
+        return true;
     }
 }

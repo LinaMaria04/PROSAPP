@@ -3,43 +3,56 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\DashboardController;
 
-/*Route::get('/', function () {
-    return ['Laravel' => app()->version()];
-});*/
+// Rutas públicas
 Route::get('/', function () {
-    return view('home');
-});
+    return view('auth.login');
+})->name('home');
 
-// Rutas de autenticación
+// Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {
-    Route::get('/login', function () {
-        return view('auth.login');
-    })->name('login');
-
-    Route::get('/register', function () {
-        return view('auth.register');
-    })->name('register');
-
+    // Rutas de login
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+
+    // Rutas de registro
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+    // Rutas de verificación de email
+    Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
 });
 
-// Rutas protegidas
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-    
+// Rutas que requieren autenticación pero no verificación de email
+Route::middleware(['auth'])->group(function () {
+    // Completar perfil
+    Route::get('/complete-profile', [AuthController::class, 'showCompleteProfileForm'])->name('complete-profile');
+    Route::post('/complete-profile', [AuthController::class, 'completeProfile'])->name('complete-profile.submit');
+});
+
+// Rutas protegidas (requieren autenticación y verificación de email)
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Rutas de Personal
-    Route::resource('/personal', PersonalController::class);
+    // Recursos
+    Route::resource('personal', PersonalController::class);
+    Route::resource('roles', RoleController::class);
+
+    // Rutas adicionales para personal
+    Route::prefix('personal')->group(function () {
+        Route::get('/search', [PersonalController::class, 'search'])->name('personal.search');
+        Route::get('/export', [PersonalController::class, 'export'])->name('personal.export');
+    });
+
+    // Rutas adicionales para roles
+    Route::prefix('roles')->group(function () {
+        Route::get('/permissions/{role}', [RoleController::class, 'permissions'])->name('roles.permissions');
+        Route::post('/permissions/{role}', [RoleController::class, 'updatePermissions'])->name('roles.update-permissions');
+    });
 });
-
-require __DIR__.'/auth.php';
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::resource('/personal', PersonalController::class);
