@@ -54,8 +54,8 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'Nombre' => ['required', 'string', 'max:255'],
-            'Email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'Contraseña' => ['required', 'string', 'min:8', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
 
@@ -69,8 +69,8 @@ class RegisterController extends Controller
     {
         return User::create([
             'Nombre' => $data['Nombre'],
-            'Email' => $data['Email'],
-            'Contraseña' => Hash::make($data['Contraseña']),
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
         ]);
     }
 
@@ -207,15 +207,15 @@ class RegisterController extends Controller
             // Validar datos del paso 2
             try {
                 $messages = [
-                    'Email.required' => 'El correo electrónico es obligatorio.',
-                    'Email.email' => 'Por favor, ingrese un correo electrónico válido.',
-                    'Email.unique' => 'Este correo electrónico ya está registrado en nuestro sistema.',
-                    'Email.max' => 'El correo electrónico no puede tener más de :max caracteres.'
+                    'email.required' => 'El correo electrónico es obligatorio.',
+                    'email.email' => 'Por favor, ingrese un correo electrónico válido.',
+                    'email.unique' => 'Este correo electrónico ya está registrado en nuestro sistema.',
+                    'email.max' => 'El correo electrónico no puede tener más de :max caracteres.'
                 ];
 
                 $validatedData = $request->validate([
-                    'Email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                    'Contraseña' => ['required', 'confirmed', Rules\Password::defaults()],
+                    'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
                 ], $messages);
             } catch (ValidationException $e) {
                 return response()->json([
@@ -229,8 +229,8 @@ class RegisterController extends Controller
                 // Crear el usuario
                 $user = User::create([
                     'Nombre' => $step1Data['razon_social'],
-                    'Email' => $validatedData['Email'],
-                    'Contraseña' => Hash::make($validatedData['Contraseña']),
+                    'email' => $validatedData['email'],
+                    'password' => Hash::make($validatedData['password']),
                     'UserSlug' => strtolower(str_replace(' ', '-', $step1Data['razon_social'])),
                     'UsRol' => 'cliente',
                     'is_active' => true,

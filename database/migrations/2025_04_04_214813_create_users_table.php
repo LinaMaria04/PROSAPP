@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id('Id_User'); // Clave primaria
             $table->string('Nombre');
-            $table->string('Email')->unique();
+            $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('Contraseña');
+            $table->string('password');
             $table->string('UserSlug')->nullable();
             $table->string('UsRol')->nullable(); // Puedes hacer FK con tabla roles si deseas
             $table->boolean('is_active')->default(false);

@@ -111,8 +111,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'Email' => 'required|email',
-            'Contraseña' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
         if (Auth::attempt($credentials)) {
@@ -120,17 +120,23 @@ class AuthController extends Controller
             
             if (!$user->is_active) {
                 Auth::logout();
-            return back()->withErrors([
-                    'Email' => 'Tu cuenta no está activa. Por favor verifica tu correo electrónico.',
+                return back()->withErrors([
+                    'email' => 'Tu cuenta no está activa. Por favor verifica tu correo electrónico.',
                 ]);
-        }
+            }
 
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+            
+            // Verificar si el usuario tiene un perfil completo
+            if (!$user->cliente) {
+                return redirect()->route('complete-profile');
+            }
+
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
-            'Email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+            'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
         ]);
     }
 
