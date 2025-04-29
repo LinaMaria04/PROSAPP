@@ -40,7 +40,7 @@ class ForgotPasswordController extends Controller
     protected function rules()
     {
         return [
-            'Email' => 'required|email',
+            'email' => 'required|email',
         ];
     }
 
@@ -52,8 +52,8 @@ class ForgotPasswordController extends Controller
     protected function validationErrorMessages()
     {
         return [
-            'Email.required' => 'El campo correo electrónico es obligatorio.',
-            'Email.email' => 'El correo electrónico debe ser una dirección válida.',
+            'email.required' => 'El campo correo electrónico es obligatorio.',
+            'email.email' => 'El correo electrónico debe ser una dirección válida.',
         ];
     }
 }

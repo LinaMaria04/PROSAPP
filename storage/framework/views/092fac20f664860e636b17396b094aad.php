@@ -69,6 +69,12 @@
 
             </div>
         <?php endif; ?>
+        <?php if(session('success')): ?>
+            <div class="alert alert-success">
+                <?php echo e(session('success')); ?>
+
+            </div>
+        <?php endif; ?>
         <form method="POST" action="<?php echo e(route('login')); ?>">
             <?php echo csrf_field(); ?>
             <div class="mb-3">

@@ -13,69 +13,27 @@ class TipoComercioSeeder extends Seeder
      */
     public function run(): void
     {
-        $tipos_comercio = [
-            [
-                'Comercio' => 'Industria Manufacturera',
-                'Descripción' => 'Empresas dedicadas a la transformación de materias primas en productos terminados',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Servicios de Salud',
-                'Descripción' => 'Hospitales, clínicas y centros médicos',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Comercio Minorista',
-                'Descripción' => 'Tiendas y establecimientos de venta al por menor',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Servicios Profesionales',
-                'Descripción' => 'Empresas de consultoría, asesoría y servicios especializados',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Construcción',
-                'Descripción' => 'Empresas dedicadas a la construcción y desarrollo inmobiliario',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Tecnología',
-                'Descripción' => 'Empresas de desarrollo de software y servicios tecnológicos',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Educación',
-                'Descripción' => 'Instituciones educativas y centros de formación',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Hostelería y Turismo',
-                'Descripción' => 'Hoteles, restaurantes y servicios turísticos',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Agricultura',
-                'Descripción' => 'Empresas dedicadas a la producción agrícola y ganadera',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'Comercio' => 'Transporte y Logística',
-                'Descripción' => 'Empresas de transporte y servicios logísticos',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]
+        $tiposComercio = [
+            ['Comercio' => 'Comercio Minorista', 'Descripción' => 'Establecimientos de venta al por menor'],
+            ['Comercio' => 'Comercio Mayorista', 'Descripción' => 'Establecimientos de venta al por mayor'],
+            ['Comercio' => 'Industria', 'Descripción' => 'Empresas industriales y manufactureras'],
+            ['Comercio' => 'Servicios', 'Descripción' => 'Empresas de servicios'],
+            ['Comercio' => 'Restaurante', 'Descripción' => 'Establecimientos de comida y bebidas'],
+            ['Comercio' => 'Hotel', 'Descripción' => 'Establecimientos de hospedaje'],
+            ['Comercio' => 'Educación', 'Descripción' => 'Instituciones educativas'],
+            ['Comercio' => 'Salud', 'Descripción' => 'Establecimientos de salud'],
+            ['Comercio' => 'Oficina', 'Descripción' => 'Oficinas y espacios corporativos'],
+            ['Comercio' => 'Otro', 'Descripción' => 'Otros tipos de comercio']
         ];
 
-        DB::table('tipo_comercio')->insert($tipos_comercio);
+        foreach ($tiposComercio as $tipo) {
+            DB::table('tipo_comercio')->insert([
+                'Comercio' => $tipo['Comercio'],
+                'Descripción' => $tipo['Descripción'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'DeleteComercio' => 0
+            ]);
+        }
     }
 }

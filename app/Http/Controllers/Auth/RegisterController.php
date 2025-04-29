@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -226,16 +227,30 @@ class RegisterController extends Controller
 
             DB::beginTransaction();
             try {
+                // Generar UserSlug único
+                $baseSlug = Str::slug($step1Data['razon_social']);
+                $userSlug = $baseSlug;
+                $counter = 1;
+
+                // Verificar si el slug existe y generar uno único
+                while (User::where('UserSlug', $userSlug)->exists()) {
+                    $userSlug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+
                 // Crear el usuario
                 $user = User::create([
                     'Nombre' => $step1Data['razon_social'],
                     'email' => $validatedData['email'],
                     'password' => Hash::make($validatedData['password']),
-                    'UserSlug' => strtolower(str_replace(' ', '-', $step1Data['razon_social'])),
+                    'UserSlug' => $userSlug,
                     'UsRol' => 'cliente',
                     'is_active' => true,
                     'email_verified_at' => now()
                 ]);
+
+                // Generar ClientSlug único
+                $clientSlug = $userSlug;
 
                 // Crear el cliente asociado
                 $cliente = Cliente::create([
@@ -245,7 +260,7 @@ class RegisterController extends Controller
                     'direccion' => $step1Data['direccion'],
                     'telefono' => $step1Data['telefono'],
                     'FK_TipoComercio' => $step1Data['FK_TipoComercio'],
-                    'ClientSlug' => strtolower(str_replace(' ', '-', $step1Data['razon_social'])),
+                    'ClientSlug' => $clientSlug,
                     'FK_ClienteUser' => $user->Id_User,
                     'ClientStatus' => 'activo'
                 ]);

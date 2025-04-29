@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -33,13 +35,12 @@ Route::middleware('guest')->group(function () {
        ->middleware(['auth', 'throttle:6,1'])
        ->name('verification.send');
 
-    Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
-    ->middleware(['auth', 'signed', 'throttle:6,1'])
-    ->name('verification.verify');
+    Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+        ->name('verification.verify');
 });
 
 // Rutas que requieren autenticación
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Completar perfil
     Route::get('/complete-profile', [AuthController::class, 'showCompleteProfileForm'])->name('complete-profile');
     Route::post('/complete-profile', [AuthController::class, 'completeProfile'])->name('complete-profile.submit');
