@@ -13,6 +13,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -246,8 +247,20 @@ class RegisterController extends Controller
                     'UserSlug' => $userSlug,
                     'UsRol' => 'cliente',
                     'is_active' => true,
-                    'email_verified_at' => now()
+                    'verification_token' => Str::random(60),
+                    'email_verified_at' => null
                 ]);
+
+                // Enviar correo de verificación
+                try {
+                    Mail::to($user->email)->send(new \App\Mail\VerifyEmail($user));
+                } catch (\Exception $e) {
+                    \Log::error('Error enviando correo de verificación', [
+                        'error' => $e->getMessage(),
+                        'user_id' => $user->Id_User
+                    ]);
+                    // Continuamos con el registro aunque falle el envío del correo
+                }
 
                 // Generar ClientSlug único
                 $clientSlug = $userSlug;

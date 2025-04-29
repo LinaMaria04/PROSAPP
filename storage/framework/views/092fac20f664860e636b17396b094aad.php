@@ -121,6 +121,11 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
             </div>
+            <div class="mb-3">
+                <a href="<?php echo e(route('password.request')); ?>" class="text-decoration-none" style="color: #1565C0;">
+                    Olvide mi contraseña
+                </a>
+            </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="remember" name="remember">
                 <label class="form-check-label" for="remember">Recordarme</label>

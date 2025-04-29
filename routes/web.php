@@ -7,6 +7,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -35,8 +37,18 @@ Route::middleware('guest')->group(function () {
        ->middleware(['auth', 'throttle:6,1'])
        ->name('verification.send');
 
-    Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+    Route::get('/verify-email/{id}/{token}', [VerifyEmailController::class, 'verify'])
         ->name('verification.verify');
+
+    // Rutas de recuperación de contraseña
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+        ->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+        ->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+        ->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->name('password.update');
 });
 
 // Rutas que requieren autenticación

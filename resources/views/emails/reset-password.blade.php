@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifica tu correo electrónico</title>
+    <title>Restablecer Contraseña</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,27 +37,28 @@
 </head>
 <body>
     <div class="container">
-        <h2>¡Bienvenido a ProsarApp!</h2>
+        <h2>Restablecer Contraseña</h2>
         
         <p>Hola {{ $user->Nombre }},</p>
 
-        <p>Gracias por registrarte en ProsarApp. Para completar tu registro y comenzar a usar la plataforma, por favor verifica tu dirección de correo electrónico haciendo clic en el siguiente botón:</p>
+        <p>Has solicitado restablecer tu contraseña en ProsarApp. Haz clic en el siguiente botón para crear una nueva contraseña:</p>
 
         <p style="text-align: center;">
-            <a href="{{ url('verify-email/' . $user->Id_User . '/' . $user->verification_token) }}" class="button">
-                Verificar correo electrónico
+            <a href="{{ url('reset-password/' . $token) }}" class="button">
+                Restablecer Contraseña
             </a>
         </p>
 
         <p>Si el botón no funciona, puedes copiar y pegar el siguiente enlace en tu navegador:</p>
         <p style="word-break: break-all;">
-            {{ url('verify-email/' . $user->Id_User . '/' . $user->verification_token) }}
+            {{ url('reset-password/' . $token) }}
         </p>
 
-        <p>Este enlace expirará en 24 horas por razones de seguridad.</p>
+        <p>Este enlace expirará en 60 minutos por razones de seguridad.</p>
+
+        <p>Si no solicitaste restablecer tu contraseña, puedes ignorar este correo y tu contraseña permanecerá sin cambios.</p>
 
         <div class="footer">
-            <p>Si no creaste una cuenta en ProsarApp, puedes ignorar este correo.</p>
             <p>© {{ date('Y') }} ProsarApp. Todos los derechos reservados.</p>
         </div>
     </div>

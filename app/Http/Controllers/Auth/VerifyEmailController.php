@@ -14,27 +14,29 @@ class VerifyEmailController extends Controller
     /**
      * Mark the authenticated user's email address as verified.
      */
-    public function verify($id, $hash)
+    public function verify($id, $token)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('Id_User', $id)->firstOrFail();
 
-        if (!$user || $user->verification_token !== $hash) {
+        // Verificar si el usuario ya está verificado
+        if ($user->email_verified_at !== null) {
+            return redirect()->route('login')
+                ->with('status', 'Tu correo electrónico ya ha sido verificado anteriormente.');
+        }
+
+        // Verificar el token
+        if ($user->verification_token !== $token) {
             return redirect()->route('login')
                 ->with('error', 'El enlace de verificación no es válido.');
         }
 
-        if ($user->email_verified_at) {
-            return redirect()->route('login')
-                ->with('info', 'Tu correo electrónico ya ha sido verificado anteriormente.');
-        }
-
+        // Actualizar el usuario
         $user->email_verified_at = now();
-        $user->is_active = true;
-        $user->verification_token = null;
+        $user->verification_token = null; // Opcional: limpiar el token después de usarlo
         $user->save();
 
         return redirect()->route('login')
-            ->with('success', '¡Tu correo electrónico ha sido verificado exitosamente! Ahora puedes iniciar sesión.');
+            ->with('status', '¡Tu correo electrónico ha sido verificado exitosamente! Ya puedes iniciar sesión.');
     }
 
     public function resend(Request $request)
