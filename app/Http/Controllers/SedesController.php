@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Sedes;
+
+class SedesController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $sedes = DB::table('sedes')
+            ->where('DeleteSedes', 0)
+            ->orderBy('Id_Sede', 'asc')
+            ->paginate(10);
+
+        return view('sedes.index', compact('sedes'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+
+        $personas = DB::table('personas')
+            ->where('DeletePersona', 0)
+            ->orderBy('Id_Peronsa', 'asc')
+            ->get();
+
+        return view('sedes.create', compact('personas'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //Desgloce de dirección seleccionada en el mapa
+        $direccionmapa = explode(',', $request->SedeMapAddressSearch);
+        $direccion = $direccionmapa[0];
+        $localidad = $direccionmapa[1];
+        $ciudad = $direccionmapa[2];
+
+        $sede = new Sedes();
+        $sede->FK_Persona = $request->persencargada;
+        $sede->NombreSede = $request->sedename;
+        $sede->Direccion = $direccion;
+        $sede->SedeMapAddressSearch = $request->SedeMapAddressSearch;
+        $sede->SedeMapAddressResult = $request->SedeMapAddressSearch;
+        $sede->SedeMapLat = $request->latitud;
+        $sede->SedeMapLong = $request->longitud;
+        $sede->SedeMapLocalidad = $localidad;
+        $sede->SedeSlug = hash('sha256', rand() . time() . $direccion);
+        $sede->Correo = $request->correo;
+        $sede->telefono = $request->telefono;
+        $sede->DeleteSedes = 0;
+        $sede->save();
+
+        return redirect()->route('sedes.index')->with('success', 'Sede creada correctamente.');
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}

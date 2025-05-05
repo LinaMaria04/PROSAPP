@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SedesController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -17,6 +18,9 @@ Route::prefix('personal')->group(function () {
     Route::get('/search', [PersonalController::class, 'search'])->name('personal.search');
     Route::get('/export', [PersonalController::class, 'export'])->name('personal.export');
 });
+
+//Rutas de sedes
+Route::resource('sedes', SedesController::class);
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {
