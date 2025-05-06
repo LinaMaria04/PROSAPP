@@ -70,15 +70,39 @@ class SedesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $sede = DB::table('sedes')
+            ->where('SedeSlug', $id)
+            ->select('*')
+            ->first();  
+
+        $persona = DB::table('personas')    
+            ->where('Id_Peronsa', $sede->FK_Persona)
+            ->select('PrimerNombre', 'SegundoNombre', 'Apellidos')
+            ->first();
+
+        $jsonSede = json_encode($sede); //Conivierte los datos de la consulta sede a JSON para utilizarlos en el javascript del mapa
+
+        return view('sedes.show', compact('sede', 'persona'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        //
+    {   
+        $sede = DB::table('sedes')
+            ->where('SedeSlug', $id)
+            ->select('*')
+            ->first();
+
+        $personas = DB::table('personas')
+            ->where('DeletePersona', 0)
+            ->orderBy('Id_Peronsa', 'asc')
+            ->get();
+    
+        $jsonSede = json_encode($sede); //Conivierte los datos de la consulta sede a JSON para utilizarlos en el javascript del mapa
+
+        return view('sedes.edit', compact('sede', 'personas'));
     }
 
     /**
@@ -86,7 +110,29 @@ class SedesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        //Desgloce de dirección seleccionada en el mapa
+        $direccionmapa = explode(',', $request->SedeMapAddressSearch);
+        $direccion = $direccionmapa[0];
+        $localidad = $direccionmapa[1];
+        $ciudad = $direccionmapa[2];
+
+        DB::table('sedes')
+            ->where('SedeSlug', $id)
+            ->update([
+                'FK_Persona' => $request->persencargada,
+                'NombreSede' => $request->sedename,
+                'Direccion' => $direccion,
+                'SedeMapAddressSearch' => $request->SedeMapAddressSearch,
+                'SedeMapAddressResult' => $request->SedeMapAddressSearch,
+                'SedeMapLat'=> $request->latitud,
+                'SedeMapLong' => $request->longitud,
+                'SedeMapLocalidad' => $localidad,
+                'Correo' => $request->correo,
+                'telefono' => $request->telefono,
+            ]);
+
+            return redirect()->route('sedes.index')->with('success', 'Persona actualizada correctamente.');
     }
 
     /**
@@ -94,6 +140,10 @@ class SedesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+       $sede = Sedes::where('SedeSlug', $id)->first();
+       $sede->DeleteSedes = 1;
+       $sede->save();
+
+       return redirect()->route('sedes.index')->with('success', 'Persona eliminada correctamente.');
     }
 }

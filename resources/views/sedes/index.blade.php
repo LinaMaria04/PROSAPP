@@ -90,19 +90,19 @@
                                             <td>{{$sede->Direccion}}</td>
                                             <td>{{$sede->SedeMapLocalidad}}</td>
                                             <td>
-                                                <a href="" class="btn btn-info">
+                                                <a href="/sedes/{{$sede->SedeSlug}}" class="btn btn-info">
                                                     <i class='bx bx-show' type="submit"></i> Ver
                                                 </a>
                                             </td>
                                             <td>    
-                                                <a href="" class="btn btn-warning">
+                                                <a href="/sedes/{{$sede->SedeSlug}}/edit" class="btn btn-warning">
                                                     <i class='bx bx-edit'></i>Editar
                                                 </a>
                                             </td>
                                             <td>    
                                                 <td>    
                                                     <a method='get' href='#' data-toggle='modal' data-target='#myModal{{$sede->SedeSlug}}' class='btn btn-danger pull-left'>
-                                                    <form action='' method='POST'  class="col-12 pull-right">
+                                                    <form action='{{route('sedes.destroy', $sede->SedeSlug)}}' method='POST'  class="col-12 pull-right">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este registro?')">
