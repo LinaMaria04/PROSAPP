@@ -69,7 +69,7 @@ class SedesController extends Controller
         $sede->DeleteSedes = 0;
         $sede->save();
 
-        return redirect()->route('sedes.index')->with('success', 'Sede creada correctamente.');
+        return redirect()->route('personal.index')->with('success', 'Sede creada correctamente.');
 
     }
 
