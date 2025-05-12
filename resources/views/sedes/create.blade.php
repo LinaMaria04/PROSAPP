@@ -229,7 +229,20 @@
                         }
                     }
 
-                     mensajeAlerta.innerHTML = "";                
+                     mensajeAlerta.innerHTML = "";         
+                    
+                    let direccion = document.getElementById('search_location').value;
+                    let partesdireccion = direccion.split(',');
+                    let dir = partesdireccion[0];
+                    let localidad = partesdireccion[1];
+                    let ciudad = partesdireccion[2];
+                    let pais = partesdireccion[3];
+
+                    if (partesdireccion.length < 4){
+                        mensajeAlerta.innerHTML = "La dirección no es válida, por favor veriifique que cuente con los siguientes datos: Calle, Localidad, Ciudad y País";
+                        return;
+                    }
+                     
                     // Se guardan las coordenadas en los inputs
                     document.getElementById('latitud').value = latitud;
                     document.getElementById('longitud').value = longitud;
@@ -237,31 +250,8 @@
 
         }
 
-       
     
     </script>    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let formulario = document.getElementById("sedeform");
-            let boton = document.getElementById("botonEnviar");
-
-            function verificarCampos() {
-                let campos = formulario.querySelectorAll("input[required]");
-                let todosLlenos = Array.from(campos).every(campo => campo.value.trim() !== "");
-
-                boton.disabled = !todosLlenos; // Habilita si todos están llenos, deshabilita si falta alguno
-            }
-
-            // Agregar evento a cada campo para verificar cuando cambie su contenido
-            formulario.querySelectorAll("input[required]").forEach(campo => {
-                campo.addEventListener("input", verificarCampos);
-            });
-
-            verificarCampos(); // Verificar al cargar la página
-        });
-</script>
-
-
     
 </body>
 </html> 
