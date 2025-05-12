@@ -5,11 +5,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SedesController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
@@ -21,6 +21,9 @@ Route::prefix('personal')->group(function () {
     Route::get('/search', [PersonalController::class, 'search'])->name('personal.search');
     Route::get('/export', [PersonalController::class, 'export'])->name('personal.export');
 });
+
+//Rutas de sedes
+Route::resource('sedes', SedesController::class);
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {
