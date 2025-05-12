@@ -128,7 +128,7 @@
                             <div class="mb-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control @error('telefono') is-invalid @enderror" 
-                                       id="telefono" name="telefono" value="{{ old('telefono', $persona->telefono ?? '') }}">
+                                       id="telefono" name="telefono" value="{{ old('telefono', $persona->telefono ?? '') }}" required>
                                 @error('telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
