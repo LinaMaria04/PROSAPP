@@ -68,7 +68,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ isset($sede) ? route('sedes.update', $sede->id) : route('sedes.store') }}" method="POST">
+                        <form action="{{ isset($sede) ? route('sedes.update', $sede->id) : route('sedes.store') }}" id="sedeform" method="POST">
                             @csrf
                             @if(isset($sede))
                                 @method('PUT')
@@ -125,6 +125,7 @@
                                 </div>
                             </div>
 
+                            <div id="mensajeAlerta" style="color: red; font-weight: bold;"></div>
                             <br>
 
                             <!-- display google map -->
@@ -133,11 +134,11 @@
                             <!-- display selected location information -->
                             <div class="col-md-12 form-group">
                                 <label for="latitud">Latitud</label><small class="help-block with-errors">*</small>
-                                <input type= "text" id="latitud" name="latitud" class="form-control">
+                                <input type= "text" id="latitud" name="latitud" class="form-control" required>
                             </div>
                             <div class="col-md-12 form-group">
                                 <label for="longitud">Longitud</label><small class="help-block with-errors">*</small>
-                                <input type= "text" id="longitud" name="longitud" class="form-control">
+                                <input type= "text" id="longitud" name="longitud" class="form-control" required>
                             </div>
 
 
@@ -169,6 +170,7 @@
         var map; // Declara map a nivel global
         var  geocoder; // Declara geocoder a nivel global
         var autocompletar;
+        var sedes = {!! json_encode($sedes) !!}; // Llama la variable sedes desde el controlador y las convierte a JSON
 
         const input = document.getElementById('search_location');
         //Función para iniciar el mapa
@@ -218,6 +220,16 @@
                     //Se guardan las coordenadas en la variable
                     const latitud = lugar.geometry.location.lat();
                     const longitud = lugar.geometry.location.lng();
+
+                    // Se valida si la dirección ya existe
+                    for (let sede of sedes) {
+                        if (sede.SedeMapLat == latitud && sede.SedeMapLong == longitud) {
+                            mensajeAlerta.innerHTML = "La sede ya se encuentra registrada";
+                            return;
+                        }
+                    }
+
+                     mensajeAlerta.innerHTML = "";                
                     // Se guardan las coordenadas en los inputs
                     document.getElementById('latitud').value = latitud;
                     document.getElementById('longitud').value = longitud;
@@ -228,6 +240,27 @@
        
     
     </script>    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let formulario = document.getElementById("sedeform");
+            let boton = document.getElementById("botonEnviar");
+
+            function verificarCampos() {
+                let campos = formulario.querySelectorAll("input[required]");
+                let todosLlenos = Array.from(campos).every(campo => campo.value.trim() !== "");
+
+                boton.disabled = !todosLlenos; // Habilita si todos están llenos, deshabilita si falta alguno
+            }
+
+            // Agregar evento a cada campo para verificar cuando cambie su contenido
+            formulario.querySelectorAll("input[required]").forEach(campo => {
+                campo.addEventListener("input", verificarCampos);
+            });
+
+            verificarCampos(); // Verificar al cargar la página
+        });
+</script>
+
 
     
 </body>

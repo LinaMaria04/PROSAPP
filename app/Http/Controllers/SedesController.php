@@ -32,7 +32,15 @@ class SedesController extends Controller
             ->orderBy('Id_Peronsa', 'asc')
             ->get();
 
-        return view('sedes.create', compact('personas'));
+        $sedes = DB::table('sedes')
+            ->where('DeleteSedes', 0)
+            ->orderBy('Id_Sede', 'asc')
+            ->get();
+            
+        $jsonSedes = json_encode($sedes); //Conivierte los datos de la consulta sedes a JSON para utilizarlos en el javascript del mapa    
+
+        ;
+        return view('sedes.create', compact('personas', 'sedes'));
     }
 
     /**
