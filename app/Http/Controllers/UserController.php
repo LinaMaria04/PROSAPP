@@ -68,4 +68,26 @@ class UserController extends Controller
         
         return redirect()->route('users.profile')->with('success', 'Información actualizada correctamente');
     }
+
+    public static function IDUsuariologueado(){
+
+        $user = Auth::user();
+        if ($user) {
+            return $user->UsRol;
+        } else {
+            return null; // O maneja el caso de usuario no autenticado según tu lógica
+        }
+
+    }
+
+    public function changeRol(Request $request, $usuarios){
+
+        $user = User::where('Id_User', $usuarios)->first();
+        if(!$user){
+            abort(404);
+        }
+        $user->UsRol = $request->usrol;
+        $user->save();
+        return back();
+	}
 } 

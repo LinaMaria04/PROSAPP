@@ -28,8 +28,6 @@ Route::prefix('personal')->group(function () {
 //Rutas de sedes
 Route::resource('sedes', SedesController::class);
 
-//Rutas de roles
-Route::post('/changerol', [rolescontroller::class, 'changeRol'])->name('changeRol');
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {
@@ -88,5 +86,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     */
     
     // Administración de usuarios
-    Route::resource('users', UsersController::class);
+    Route::resource('users', UsersController::class);   
+    Route::post('/changerol/{id}', [UserController::class, 'changeRol'])->name('changeRol');
 });

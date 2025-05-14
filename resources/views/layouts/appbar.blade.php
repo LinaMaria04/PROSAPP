@@ -1,22 +1,10 @@
 @php
     use App\Models\User;
-    use App\Http\Controllers\rolescontroller;
+    use App\Http\Controllers\Usercontroller;
 
     $usuario = auth()->user();
 
-    dd($usuario);
-
 @endphp
-<style>
-    .navbar {
-            background: linear-gradient(135deg, #1565C0, #64B5F6);
-        }   
-
-    .hidden {
-        display: none;
-    }    
-    
-</style>
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -35,11 +23,13 @@
                         <button type="submit" class="btn btn-link nav-link">Cerrar Sesión</button>
                     </form>
                 </li>
+                @if (Auth::user()->email == 'sistemas@prosarc.com.co'||Auth::user()->email == 'sistemas2@prosarc.com.co')
                 <li class="nav-item">
                     <a class="nav-link" href="#" id="toggleSidebar">
                         <i class="fa fa-cogs"></i>
                     </a>
                 </li>
+                @endif
             </ul>
         </div>
     </div>
@@ -52,11 +42,10 @@
             <h3 class="control-sidebar-heading">Panel de administración de roles</h3>
         </div>    
         <ul class="control-sidebar-menu">
-            <!-- Aquí iría el permiso de rol administrador cuando ya se tengan creados -->
-            <form action="/changerol" style="margin: 1em;" method="POST">
+            <form action="/changerol/{{$usuario->Id_User}}" style="margin: 1em;" method="POST">
                 @csrf
-                <label for ="rol">Seleccione el rol</label>
-                <select id="rol" name="usrol">
+                <label class="form-label">Seleccione el rol</label>
+                <select class="form-select" id="rol" name="usrol">
                     <option>Administrador</option>
                     <option>Cliente</option>
                     <option>Conductor</option>
@@ -80,11 +69,16 @@
         top: 0;
         width: 300px;
         height: 100vh;
-        background: white;
-        color: black;
+        background: linear-gradient(135deg, #64B5F6, #1565C0);
+        color: white;
         padding: 20px;
         display: none; 
     }
+    
+    .navbar {
+            background: linear-gradient(135deg, #1565C0, #64B5F6);
+        }   
+
 </style>
 
 <!-- JavaScript para alternar la visibilidad del panel -->
