@@ -33,13 +33,14 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'Nombre',
-        'Email',
-        'Contraseña',
+        'email',
+        'password',
         'UserSlug',
         'UsRol',
         'is_active',
         'verification_token',
-        'FK_UserPersona'
+        'FK_UserPersona',
+        'DeleteUser'
     ];
 
     /**
@@ -48,7 +49,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'Contraseña',
+        'password',
         'remember_token',
     ];
 
@@ -61,7 +62,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'Contraseña' => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
@@ -72,7 +73,7 @@ class User extends Authenticatable
      */
     public function getAuthPassword()
     {
-        return $this->Contraseña;
+        return $this->password;
     }
 
     public function cliente()

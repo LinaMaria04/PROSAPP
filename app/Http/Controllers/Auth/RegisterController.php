@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -54,8 +56,8 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'Nombre' => ['required', 'string', 'max:255'],
-            'Email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'Contraseña' => ['required', 'string', 'min:8', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
 
@@ -69,8 +71,8 @@ class RegisterController extends Controller
     {
         return User::create([
             'Nombre' => $data['Nombre'],
-            'Email' => $data['Email'],
-            'Contraseña' => Hash::make($data['Contraseña']),
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
         ]);
     }
 
@@ -207,15 +209,15 @@ class RegisterController extends Controller
             // Validar datos del paso 2
             try {
                 $messages = [
-                    'Email.required' => 'El correo electrónico es obligatorio.',
-                    'Email.email' => 'Por favor, ingrese un correo electrónico válido.',
-                    'Email.unique' => 'Este correo electrónico ya está registrado en nuestro sistema.',
-                    'Email.max' => 'El correo electrónico no puede tener más de :max caracteres.'
+                    'email.required' => 'El correo electrónico es obligatorio.',
+                    'email.email' => 'Por favor, ingrese un correo electrónico válido.',
+                    'email.unique' => 'Este correo electrónico ya está registrado en nuestro sistema.',
+                    'email.max' => 'El correo electrónico no puede tener más de :max caracteres.'
                 ];
 
                 $validatedData = $request->validate([
-                    'Email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                    'Contraseña' => ['required', 'confirmed', Rules\Password::defaults()],
+                    'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
                 ], $messages);
             } catch (ValidationException $e) {
                 return response()->json([
@@ -226,16 +228,42 @@ class RegisterController extends Controller
 
             DB::beginTransaction();
             try {
+                // Generar UserSlug único
+                $baseSlug = Str::slug($step1Data['razon_social']);
+                $userSlug = $baseSlug;
+                $counter = 1;
+
+                // Verificar si el slug existe y generar uno único
+                while (User::where('UserSlug', $userSlug)->exists()) {
+                    $userSlug = $baseSlug . '-' . $counter;
+                    $counter++;
+                }
+
                 // Crear el usuario
                 $user = User::create([
                     'Nombre' => $step1Data['razon_social'],
-                    'Email' => $validatedData['Email'],
-                    'Contraseña' => Hash::make($validatedData['Contraseña']),
-                    'UserSlug' => strtolower(str_replace(' ', '-', $step1Data['razon_social'])),
+                    'email' => $validatedData['email'],
+                    'password' => Hash::make($validatedData['password']),
+                    'UserSlug' => $userSlug,
                     'UsRol' => 'cliente',
                     'is_active' => true,
-                    'email_verified_at' => now()
+                    'verification_token' => Str::random(60),
+                    'email_verified_at' => null
                 ]);
+
+                // Enviar correo de verificación
+                try {
+                    Mail::to($user->email)->send(new \App\Mail\VerifyEmail($user));
+                } catch (\Exception $e) {
+                    \Log::error('Error enviando correo de verificación', [
+                        'error' => $e->getMessage(),
+                        'user_id' => $user->Id_User
+                    ]);
+                    // Continuamos con el registro aunque falle el envío del correo
+                }
+
+                // Generar ClientSlug único
+                $clientSlug = $userSlug;
 
                 // Crear el cliente asociado
                 $cliente = Cliente::create([
@@ -245,7 +273,7 @@ class RegisterController extends Controller
                     'direccion' => $step1Data['direccion'],
                     'telefono' => $step1Data['telefono'],
                     'FK_TipoComercio' => $step1Data['FK_TipoComercio'],
-                    'ClientSlug' => strtolower(str_replace(' ', '-', $step1Data['razon_social'])),
+                    'ClientSlug' => $clientSlug,
                     'FK_ClienteUser' => $user->Id_User,
                     'ClientStatus' => 'activo'
                 ]);

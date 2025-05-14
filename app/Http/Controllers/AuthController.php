@@ -21,27 +21,45 @@ class AuthController extends Controller
     {
         $request->validate([
             'Nombre' => 'required|string|max:255',
-            'Email' => 'required|string|email|max:255|unique:users',
-            'Contraseña' => 'required|string|min:8|confirmed',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ]);
+
+        // Generar un UserSlug único basado en el nombre
+        $baseSlug = Str::slug($request->Nombre);
+        $userSlug = $baseSlug;
+        $counter = 1;
+
+        // Verificar si el slug ya existe y agregar un número si es necesario
+        while (User::where('UserSlug', $userSlug)->exists()) {
+            $userSlug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
 
         $user = User::create([
             'Nombre' => $request->Nombre,
-            'Email' => $request->Email,
-            'Contraseña' => Hash::make($request->Contraseña),
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'UserSlug' => $userSlug,
             'UsRol' => 'cliente',
             'is_active' => false,
         ]);
 
-        // Enviar email de verificación
+        // Generar token de verificación
         $verificationToken = Str::random(60);
         $user->verification_token = $verificationToken;
         $user->save();
 
-        Mail::send('emails.verify', ['token' => $verificationToken], function($message) use ($user) {
-            $message->to($user->Email);
-            $message->subject('Verifica tu correo electrónico');
-        });
+        // Enviar correo de verificación
+        try {
+            Mail::send('emails.verify', ['user' => $user], function($message) use ($user) {
+                $message->to($user->email);
+                $message->subject('Verifica tu correo electrónico');
+            });
+        } catch (\Exception $e) {
+            // Si falla el envío del correo, continuamos pero registramos el error
+            \Log::error('Error enviando correo de verificación: ' . $e->getMessage());
+        }
 
         Auth::login($user);
 
@@ -111,27 +129,50 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'Email' => 'required|email',
-            'Contraseña' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            
-            if (!$user->is_active) {
-                Auth::logout();
+        // Verificar si el usuario existe
+        $user = User::where('email', $request->email)->first();
+        
+        if (!$user) {
             return back()->withErrors([
-                    'Email' => 'Tu cuenta no está activa. Por favor verifica tu correo electrónico.',
-                ]);
+                'email' => 'El correo electrónico no está registrado en nuestro sistema.',
+            ])->withInput($request->only('email'));
         }
 
-            $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+        // Verificar la contraseña
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'password' => 'La contraseña es incorrecta.',
+            ])->withInput($request->only('email'));
         }
 
-        return back()->withErrors([
-            'Email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
-        ]);
+        // Verificar si el correo está verificado
+        if (!$user->email_verified_at) {
+            return back()->withErrors([
+                'email' => 'Por favor verifica tu correo electrónico antes de iniciar sesión.',
+            ])->withInput($request->only('email'));
+        }
+
+        // Verificar si la cuenta está activa
+        if (!$user->is_active) {
+            return back()->withErrors([
+                'email' => 'Tu cuenta está inactiva. Por favor contacta al administrador.',
+            ])->withInput($request->only('email'));
+        }
+
+        // Si todo está correcto, iniciar sesión
+        Auth::login($user);
+        $request->session()->regenerate();
+        
+        // Verificar si el usuario tiene un perfil completo
+        if (!$user->cliente) {
+            return redirect()->route('complete-profile');
+        }
+
+        return redirect()->route('dashboard');
     }
 
     public function logout(Request $request)

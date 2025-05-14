@@ -119,21 +119,21 @@
         <!-- Paso 2: Formulario de datos de acceso -->
         <form id="step2Form">
             <div class="mb-3">
-                <label for="Email" class="form-label">Correo electrónico</label>
-                <input type="email" class="form-control" id="Email" name="Email" required>
-                <div class="invalid-feedback" id="Email-error"></div>
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <div class="invalid-feedback" id="email-error"></div>
             </div>
 
             <div class="mb-3">
-                <label for="Contraseña" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="Contraseña" name="Contraseña" required>
-                <div class="invalid-feedback" id="Contraseña-error"></div>
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <div class="invalid-feedback" id="password-error"></div>
             </div>
 
             <div class="mb-3">
-                <label for="Contraseña_confirmation" class="form-label">Confirmar contraseña</label>
-                <input type="password" class="form-control" id="Contraseña_confirmation" name="Contraseña_confirmation" required>
-                <div class="invalid-feedback" id="Contraseña_confirmation-error"></div>
+                <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
+                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                <div class="invalid-feedback" id="password_confirmation-error"></div>
             </div>
 
             <button type="button" class="btn btn-secondary w-100 mb-2" onclick="showStep1()">Anterior</button>
@@ -234,13 +234,13 @@
             const formData = new FormData(e.target);
             
             // Validar que las contraseñas coincidan en el frontend
-            const password = formData.get('Contraseña');
-            const confirmation = formData.get('Contraseña_confirmation');
+            const password = formData.get('password');
+            const confirmation = formData.get('password_confirmation');
             
             if (password !== confirmation) {
                 showErrors({
-                    'Contraseña': ['Las contraseñas no coinciden'],
-                    'Contraseña_confirmation': ['Las contraseñas no coinciden']
+                    'password': ['Las contraseñas no coinciden'],
+                    'password_confirmation': ['Las contraseñas no coinciden']
                 });
                 return;
             }
