@@ -6,6 +6,7 @@ use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SedesController;
+use App\Http\Controllers\rolescontroller;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -21,6 +22,9 @@ Route::prefix('personal')->group(function () {
 
 //Rutas de sedes
 Route::resource('sedes', SedesController::class);
+
+//Rutas de roles
+Route::post('/changerol', [rolescontroller::class, 'changeRol'])->name('changeRol');
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {

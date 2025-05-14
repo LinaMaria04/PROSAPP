@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
-class roles extends Controller
+class rolescontroller extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -61,4 +63,28 @@ class roles extends Controller
     {
         //
     }
+
+    public static function IDUsuariologueado(){
+
+        $user = Auth::user();
+        if ($user) {
+            return $user->UsRol;
+        } else {
+            return null; // O maneja el caso de usuario no autenticado según tu lógica
+        }
+
+    }
+
+    public function changeRol(Request $request){
+
+        return $request;
+		/*$user = User::where('UsSlug', $slug)->first();
+		if (!$user) {
+			abort(404);
+		}
+		$user->UsRol = $request->input('UsRol1');
+		$user->UsRol2 = $request->input('UsRol2');
+		$user->save();
+		return back();*/
+	}
 }
