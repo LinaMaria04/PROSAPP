@@ -10,8 +10,9 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\rolescontroller;
-
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
@@ -71,10 +72,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    // Perfil de usuario
+    Route::get('/profile', [UserController::class, 'profile'])->name('users.profile');
+    Route::get('/profile/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/profile/update', [UserController::class, 'update'])->name('users.update');
+
     // Recursos
+    // Comentado temporalmente hasta que se implemente el RoleController
+    /*
     Route::resource('roles', RoleController::class);
     Route::prefix('roles')->group(function () {
         Route::get('/permissions/{role}', [RoleController::class, 'permissions'])->name('roles.permissions');
         Route::post('/permissions/{role}', [RoleController::class, 'updatePermissions'])->name('roles.update-permissions');
     });
+    */
+    
+    // Administración de usuarios
+    Route::resource('users', UsersController::class);
 });

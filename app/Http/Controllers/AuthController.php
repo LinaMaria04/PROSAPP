@@ -128,6 +128,8 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        \Log::info('Intento de inicio de sesión para: ' . $request->email);
+        
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -137,6 +139,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         
         if (!$user) {
+            \Log::info('Usuario no encontrado: ' . $request->email);
             return back()->withErrors([
                 'email' => 'El correo electrónico no está registrado en nuestro sistema.',
             ])->withInput($request->only('email'));
@@ -144,6 +147,7 @@ class AuthController extends Controller
 
         // Verificar la contraseña
         if (!Hash::check($request->password, $user->password)) {
+            \Log::info('Contraseña incorrecta para: ' . $request->email);
             return back()->withErrors([
                 'password' => 'La contraseña es incorrecta.',
             ])->withInput($request->only('email'));
@@ -151,6 +155,7 @@ class AuthController extends Controller
 
         // Verificar si el correo está verificado
         if (!$user->email_verified_at) {
+            \Log::info('Correo no verificado para: ' . $request->email);
             return back()->withErrors([
                 'email' => 'Por favor verifica tu correo electrónico antes de iniciar sesión.',
             ])->withInput($request->only('email'));
@@ -158,21 +163,26 @@ class AuthController extends Controller
 
         // Verificar si la cuenta está activa
         if (!$user->is_active) {
+            \Log::info('Cuenta inactiva para: ' . $request->email);
             return back()->withErrors([
                 'email' => 'Tu cuenta está inactiva. Por favor contacta al administrador.',
             ])->withInput($request->only('email'));
         }
 
         // Si todo está correcto, iniciar sesión
+        \Log::info('Iniciando sesión para: ' . $request->email);
         Auth::login($user);
         $request->session()->regenerate();
         
         // Verificar si el usuario tiene un perfil completo
-        if (!$user->cliente) {
+        if ($user->UsRol === 'cliente' && !$user->cliente) {
+            \Log::info('Redirigiendo a complete-profile para: ' . $request->email);
             return redirect()->route('complete-profile');
         }
 
-        return redirect()->route('dashboard');
+        // Redirigir a la página de usuarios
+        \Log::info('Redirigiendo a users.index para: ' . $request->email);
+        return redirect()->route('users.index');
     }
 
     public function logout(Request $request)
