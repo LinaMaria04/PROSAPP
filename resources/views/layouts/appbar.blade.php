@@ -73,6 +73,7 @@
         color: white;
         padding: 20px;
         display: none; 
+        z-index: 9999;
     }
     
     .navbar {
@@ -94,6 +95,22 @@
             sidebar.style.display = "none"; // Ocultar el panel
         }
     });
+
+    // Ocultar el sidebar si se hace clic fuera de él
+    document.addEventListener("click", function (event) {
+        const sidebar = document.getElementById("controlSidebar");
+        const toggleButton = document.getElementById("toggleSidebar");
+
+        // Verificar si el clic fue fuera del sidebar y fuera del botón de toggle
+        const clicFueraSidebar = !sidebar.contains(event.target);
+        const clicFueraBoton = !toggleButton.contains(event.target);
+
+        if (sidebar.style.display === "block" && clicFueraSidebar && clicFueraBoton) {
+            sidebar.style.display = "none";
+        }
+    });
+
+
 </script>
 
 
