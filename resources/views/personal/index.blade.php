@@ -10,9 +10,6 @@
         body {
             background-color: #f8f9fa;
         }
-        .navbar {
-            background: linear-gradient(135deg, #1565C0, #64B5F6);
-        }
         .card {
             border: none;
             border-radius: 10px;
@@ -32,26 +29,8 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    @include('layouts.appbar')
         <div class="container">
-            <a class="navbar-brand" href="#">ProsarApp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-link nav-link">Cerrar Sesión</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
         <div class="row">
                 @include('layouts.aside')
             <div class="col sm-9">

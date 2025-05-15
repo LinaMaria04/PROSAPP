@@ -33,24 +33,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#">ProsarApp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a href="{{ route('personal.index') }}" class="nav-link">
-                            <i class='bx bx-arrow-back'></i> Volver
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+@include('layouts.appbar')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -128,7 +111,7 @@
                             <div class="mb-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control @error('telefono') is-invalid @enderror" 
-                                       id="telefono" name="telefono" value="{{ old('telefono', $persona->telefono ?? '') }}">
+                                       id="telefono" name="telefono" value="{{ old('telefono', $persona->telefono ?? '') }}" required>
                                 @error('telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

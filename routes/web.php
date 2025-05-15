@@ -10,8 +10,9 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\rolescontroller;
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
@@ -26,6 +27,7 @@ Route::prefix('personal')->group(function () {
 
 //Rutas de sedes
 Route::resource('sedes', SedesController::class);
+
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {
@@ -84,5 +86,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     */
     
     // Administración de usuarios
-    Route::resource('users', UsersController::class);
+    Route::resource('users', UsersController::class);   
+    Route::post('/changerol/{id}', [UserController::class, 'changeRol'])->name('changeRol');
 });

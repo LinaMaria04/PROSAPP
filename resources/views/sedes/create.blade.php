@@ -33,23 +33,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#">ProsarApp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a href="{{ route('sedes.index') }}" class="nav-link">
-                            <i class='bx bx-arrow-back'></i> Volver
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('layouts.appbar')
 
     <div class="container">
         <div class="row justify-content-center">
@@ -68,7 +52,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ isset($sede) ? route('sedes.update', $sede->id) : route('sedes.store') }}" method="POST">
+                        <form action="{{ isset($sede) ? route('sedes.update', $sede->id) : route('sedes.store') }}" id="sedeform" method="POST">
                             @csrf
                             @if(isset($sede))
                                 @method('PUT')
@@ -125,6 +109,7 @@
                                 </div>
                             </div>
 
+                            <div id="mensajeAlerta" style="color: red; font-weight: bold;"></div>
                             <br>
 
                             <!-- display google map -->
@@ -133,11 +118,11 @@
                             <!-- display selected location information -->
                             <div class="col-md-12 form-group">
                                 <label for="latitud">Latitud</label><small class="help-block with-errors">*</small>
-                                <input type= "text" id="latitud" name="latitud" class="form-control">
+                                <input type= "text" id="latitud" name="latitud" class="form-control" required>
                             </div>
                             <div class="col-md-12 form-group">
                                 <label for="longitud">Longitud</label><small class="help-block with-errors">*</small>
-                                <input type= "text" id="longitud" name="longitud" class="form-control">
+                                <input type= "text" id="longitud" name="longitud" class="form-control" required>
                             </div>
 
 
@@ -169,6 +154,7 @@
         var map; // Declara map a nivel global
         var  geocoder; // Declara geocoder a nivel global
         var autocompletar;
+        var sedes = {!! json_encode($sedes) !!}; // Llama la variable sedes desde el controlador y las convierte a JSON
 
         const input = document.getElementById('search_location');
         //Función para iniciar el mapa
@@ -218,6 +204,29 @@
                     //Se guardan las coordenadas en la variable
                     const latitud = lugar.geometry.location.lat();
                     const longitud = lugar.geometry.location.lng();
+
+                    // Se valida si la dirección ya existe
+                    for (let sede of sedes) {
+                        if (sede.SedeMapLat == latitud && sede.SedeMapLong == longitud) {
+                            mensajeAlerta.innerHTML = "La sede ya se encuentra registrada";
+                            return;
+                        }
+                    }
+
+                     mensajeAlerta.innerHTML = "";         
+                    
+                    let direccion = document.getElementById('search_location').value;
+                    let partesdireccion = direccion.split(',');
+                    let dir = partesdireccion[0];
+                    let localidad = partesdireccion[1];
+                    let ciudad = partesdireccion[2];
+                    let pais = partesdireccion[3];
+
+                    if (partesdireccion.length < 4){
+                        mensajeAlerta.innerHTML = "La dirección no es válida, por favor veriifique que cuente con los siguientes datos: Calle, Localidad, Ciudad y País";
+                        return;
+                    }
+                     
                     // Se guardan las coordenadas en los inputs
                     document.getElementById('latitud').value = latitud;
                     document.getElementById('longitud').value = longitud;
@@ -225,10 +234,8 @@
 
         }
 
-       
     
     </script>    
-
     
 </body>
 </html> 

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
-class roles extends Controller
+class rolescontroller extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -61,4 +63,5 @@ class roles extends Controller
     {
         //
     }
+
 }

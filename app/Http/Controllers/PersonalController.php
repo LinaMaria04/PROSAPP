@@ -48,7 +48,7 @@ class PersonalController extends Controller
         $persona->DeletePersona = 0;
         $persona->save();
 
-        return redirect()->route('personal.index')->with('success', 'Persona creada correctamente.');
+        return redirect()->route('sedes.index')->with('success', 'Persona creada correctamente.');
     }
 
     /**
