@@ -238,7 +238,7 @@ class RegisterController extends Controller
                     'email' => $validatedData['email'],
                     'password' => Hash::make($validatedData['password']),
                     'UserSlug' => $userSlug,
-                    'UsRol' => 'cliente',
+                    'UsRol' => 'Cliente',
                     'is_active' => true,
                     'verification_token' => Str::random(60),
                     'email_verified_at' => null

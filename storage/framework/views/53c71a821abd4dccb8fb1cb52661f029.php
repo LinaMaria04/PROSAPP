@@ -29,15 +29,25 @@
                                     <p class="card-text">Gestiona el personal de la empresa.</p>
                                     <a href="<?php echo e(route('personal.index')); ?>" class="btn btn-primary">Ver Personal</a>
                                 </div>
-            </div>
-        </div>
+                            </div>
+                        </div>
 
                         <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
+                            <div class="card">
+                                <div class="card-body">
                                     <h5 class="card-title">Roles</h5>
                                     <p class="card-text">Administra los roles y permisos.</p>
                                     <a href="<?php echo e(route('roles.index')); ?>" class="btn btn-primary">Ver Roles</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mi Perfil</h5>
+                                    <p class="card-text">Gestiona tu información personal y contraseña.</p>
+                                    <a href="<?php echo e(route('users.profile')); ?>" class="btn btn-primary">Ver Perfil</a>
                                 </div>
                             </div>
                         </div>

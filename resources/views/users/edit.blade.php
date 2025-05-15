@@ -35,77 +35,102 @@
         <div class="row">
             @include('layouts.aside')
             <div class="col sm-9">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title mb-4">Editar Usuario</h4>
-                        
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <form action="{{ route('users.update', $user->UserSlug) }}" method="POST">
-                            @csrf
-                            @method('PUT')
+                {{-- Verificar si el usuario tiene permisos de administrador --}}
+                @if(App\Permisos::check(App\Permisos::ADMINISTRADORES))
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Editar Usuario</h4>
                             
-                            <div class="mb-3">
-                                <label for="Nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control @error('Nombre') is-invalid @enderror" id="Nombre" name="Nombre" value="{{ old('Nombre', $user->Nombre) }}" required>
-                                @error('Nombre')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
 
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <form action="{{ route('users.update', $user->UserSlug) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                
+                                <div class="mb-3">
+                                    <label for="Nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control @error('Nombre') is-invalid @enderror" id="Nombre" name="Nombre" value="{{ old('Nombre', $user->Nombre) }}" required>
+                                    @error('Nombre')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="UsRol" class="form-label">Rol</label>
-                                <input type="text" class="form-control @error('UsRol') is-invalid @enderror" id="UsRol" name="UsRol" value="{{ old('UsRol', $user->UsRol) }}" required>
-                                <div class="form-text">Ejemplos: admin, usuario, cliente, etc.</div>
-                                @error('UsRol')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Correo Electrónico</label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                            <hr class="my-4">
-                            <h5>Cambiar Contraseña</h5>
-                            <p class="text-muted small">Deja estos campos en blanco si no deseas cambiar la contraseña.</p>
+                                <div class="mb-3">
+                                    <label for="UsRol" class="form-label">Rol</label>
+                                    <select class="form-control @error('UsRol') is-invalid @enderror" id="UsRol" name="UsRol" required>
+                                        @foreach(App\Permisos::AL as $rol)
+                                            <option value="{{ $rol }}" {{ old('UsRol', $user->UsRol) == $rol ? 'selected' : '' }}>
+                                                {{ $rol }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text">Selecciona el rol del usuario.</div>
+                                    @error('UsRol')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Nueva Contraseña</label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                                <div class="mb-3">
+                                    <label for="is_active" class="form-label">Estado de la Cuenta</label>
+                                    <select class="form-control @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
+                                        <option value="1" {{ old('is_active', $user->is_active) == 1 ? 'selected' : '' }}>Activa</option>
+                                        <option value="0" {{ old('is_active', $user->is_active) == 0 ? 'selected' : '' }}>Inactiva</option>
+                                    </select>
+                                    @error('is_active')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="password_confirmation" class="form-label">Confirmar Nueva Contraseña</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
-                            </div>
+                                <hr class="my-4">
+                                <h5>Cambiar Contraseña</h5>
+                                <p class="text-muted small">Deja estos campos en blanco si no deseas cambiar la contraseña.</p>
 
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                                    <i class='bx bx-arrow-back'></i> Volver
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class='bx bx-save'></i> Guardar Cambios
-                                </button>
-                            </div>
-                        </form>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Nueva Contraseña</label>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password_confirmation" class="form-label">Confirmar Nueva Contraseña</label>
+                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                                        <i class='bx bx-arrow-back'></i> Volver
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class='bx bx-save'></i> Guardar Cambios
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="alert alert-danger">
+                        No tienes permiso para editar usuarios. Esta acción solo está disponible para administradores.
+                    </div>
+                    <a href="{{ route('users.index') }}" class="btn btn-primary">Volver al listado</a>
+                @endif
             </div>
         </div>
     </div>

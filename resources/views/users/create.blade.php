@@ -68,14 +68,24 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-3">
-                                <label for="UsRol" class="form-label">Rol</label>
-                                <input type="text" class="form-control @error('UsRol') is-invalid @enderror" id="UsRol" name="UsRol" value="{{ old('UsRol', 'usuario') }}" required>
-                                <div class="form-text">Ejemplos: admin, usuario, cliente, etc.</div>
-                                @error('UsRol')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            @if($roles)
+                                <div class="mb-3">
+                                    <label for="UsRol" class="form-label">Rol</label>
+                                    <select class="form-control @error('UsRol') is-invalid @enderror" id="UsRol" name="UsRol" required>
+                                        @foreach($roles as $rol)
+                                            <option value="{{ $rol }}" {{ old('UsRol') == $rol ? 'selected' : '' }}>
+                                                {{ $rol }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text">Selecciona el rol del usuario.</div>
+                                    @error('UsRol')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @else
+                                <input type="hidden" name="UsRol" value="cliente">
+                            @endif
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>

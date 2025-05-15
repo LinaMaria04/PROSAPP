@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="<?php echo e(asset('css/bootstrap.min.css')); ?>" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <!-- Scripts -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/sass/app.scss', 'resources/js/app.js']); ?>
@@ -58,15 +59,22 @@
                         <?php else: ?>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    <?php echo e(Auth::user()->name); ?>
+                                    <?php echo e(Auth::user()->Nombre); ?>
 
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="<?php echo e(route('users.profile')); ?>">
+                                        <i class="fas fa-user me-2"></i><?php echo e(__('Mi Perfil')); ?>
+
+                                    </a>
+                                    
+                                    <div class="dropdown-divider"></div>
+                                    
                                     <a class="dropdown-item" href="<?php echo e(route('logout')); ?>"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        <?php echo e(__('Logout')); ?>
+                                        <i class="fas fa-sign-out-alt me-2"></i><?php echo e(__('Cerrar Sesión')); ?>
 
                                     </a>
 

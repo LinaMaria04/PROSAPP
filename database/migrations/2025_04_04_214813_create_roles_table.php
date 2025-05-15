@@ -14,7 +14,7 @@ return new class extends Migration
     Schema::create('roles', function (Blueprint $table) {
         $table->id('Id_Rol'); // Clave primaria autoincremental
         $table->string('Rol'); // Varchar
-        $table->string('Descripción'); // Varchar
+        $table->string('Descripcion'); // Varchar
         $table->timestamps(); // created_at y updated_at
         $table->tinyInteger('DeleteRol')->default(0); // Tinyint
     });

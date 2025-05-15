@@ -6,14 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class rolescontroller extends Controller
+class RolesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $roles = DB::table('roles')->get();
+        return view('roles.index', compact('roles'));
     }
 
     /**
@@ -21,7 +22,7 @@ class rolescontroller extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -45,7 +46,9 @@ class rolescontroller extends Controller
      */
     public function edit(string $id)
     {
-        //
+       $user = User::findOrFail($id);
+       $roles = DB::table('roles')->pluck('Rol');//solo traemos los reoles de la base de datos
+       return view('users.edit', compact('user', 'roles'));
     }
 
     /**
