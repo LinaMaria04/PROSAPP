@@ -25,16 +25,9 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Generar un UserSlug único basado en el nombre
-        $baseSlug = Str::slug($request->Nombre);
-        $userSlug = $baseSlug;
-        $counter = 1;
-
-        // Verificar si el slug ya existe y agregar un número si es necesario
-        while (User::where('UserSlug', $userSlug)->exists()) {
-            $userSlug = $baseSlug . '-' . $counter;
-            $counter++;
-        }
+        $apellido = $request->Apellidos;
+        $userSlug = hash('sha256', rand().time().$apellido);
+        \Log::info('Slug final asignado: ' . $userSlug);
 
         $user = User::create([
             'Nombre' => $request->Nombre,

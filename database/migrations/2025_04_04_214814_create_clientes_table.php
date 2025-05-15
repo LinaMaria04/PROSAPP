@@ -22,7 +22,6 @@ return new class extends Migration
         $table->string('ClientSlug')->nullable();
         $table->string('ClientRut')->nullable();
         $table->string('CorreoFE')->nullable();
-        $table->tinyInteger('FK_PersCliente')->nullable(); // FK opcional a personas
         $table->string('ClientStatus')->nullable();
         $table->string('TipoFacturacion')->nullable();
             $table->foreignId('FK_ClienteUser')->nullable()->constrained('users', 'Id_User');

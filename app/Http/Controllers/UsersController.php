@@ -48,7 +48,8 @@ class UsersController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->UsRol = $request->UsRol;
-        $user->UserSlug = Str::slug($request->Nombre) . '-' . time();
+        $apellido = $request->Apellidos;
+        $user->UserSlug = hash('sha256', rand().time().$apellido);
         $user->is_active = 1;
         $user->DeleteUser = 0;
         $user->save();
