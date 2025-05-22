@@ -102,7 +102,7 @@
 
                         @if($sedes->hasPages())
                             <div class="mt-4">
-                                {{ $sedes->links() }}
+                                {{ $sedes->links('pagination::bootstrap-5') }}
                             </div>
                         @endif
                     </div>

@@ -118,7 +118,7 @@
 
                         @if($users->hasPages())
                             <div class="mt-4">
-                                {{ $users->links() }}
+                                {{ $users->links('pagination::bootstrap-5') }}
                             </div>
                         @endif
                     </div>

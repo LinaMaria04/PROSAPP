@@ -13,12 +13,29 @@ class PersonalController extends Controller
      */
     public function index(){
 
-        $personal = DB::table('personas')
+        $user = auth()->user();
+
+        if($user->UsRol == 'Administrador'){
+
+            $personal = DB::table('personas')
             ->where('DeletePersona', 0)
+            ->orderBy('PrimerNombre', 'asc')
+            //->get();
+            ->paginate(10);
+        
+        return view('personal.index', compact('personal'));
+
+        } else {
+
+        $personal = DB::table('personas')
+            ->join('clientes', 'clientes.Id_Cliente', '=', 'personas.FK_PersCliente')
+            ->where('DeletePersona', 0)
+            ->where('clientes.FK_ClienteUser', $user->Id_User)
             ->orderBy('PrimerNombre', 'asc')
             ->paginate(10);
 
         return view('personal.index', compact('personal'));
+        }
 
     }    
 
@@ -35,6 +52,13 @@ class PersonalController extends Controller
      */
     public function store(Request $request)
     {
+
+        $usuario = auth()->user();
+
+        $cliente = DB::table('clientes')
+            ->where('FK_ClienteUser', $usuario->Id_User)
+            ->first();
+
         //return $request;
         $persona = new Personal();
         $persona->PersDocType = $request->tipdoc;
@@ -43,12 +67,35 @@ class PersonalController extends Controller
         $persona->SegundoNombre = $request->segundonombre;
         $persona->Apellidos = $request->apellido;
         $persona->Telefono = $request->telefono;
-        $persona->FK_PersCliente = 1;
+        $persona->FK_PersCliente = $cliente->Id_Cliente;
         $persona->PersSlug = hash('sha256', rand().time().$request->apellido);
         $persona->DeletePersona = 0;
         $persona->save();
 
-        return redirect()->route('sedes.index')->with('success', 'Persona creada correctamente.');
+        $personas = DB::table('personas')
+            ->where('FK_PersCliente', $cliente->Id_Cliente)
+            ->select('Id_Peronsa')
+            ->first();  
+        
+            //return $personas;
+
+        $user = DB::table('users')
+            ->where('Id_User', $usuario->Id_User)
+            ->update([
+                'FK_UserPersona' => $personas->Id_Peronsa,
+            ]);
+
+        $sedes = DB::table('sedes')    
+            ->where('FK_Persona', $personas->Id_Peronsa)
+            ->get();
+
+        //return $sedes;
+
+        if($sedes === Null){
+            return redirect()->route('sedes.create')->with('success', 'Persona creada correctamente.');
+        } else {
+            return redirect()->route('sedes.index')->with('success', 'Persona creada correctamente.');
+        }
     }
 
     /**

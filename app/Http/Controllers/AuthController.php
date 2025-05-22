@@ -169,9 +169,9 @@ class AuthController extends Controller
         $request->session()->regenerate();
         
         // Verificar si el usuario tiene un perfil completo
-        if ($user->UsRol === 'cliente' && !$user->cliente) {
+        if ($user->UsRol === 'cliente' && $user->FK_UserPersona === null) {
             \Log::info('Redirigiendo a complete-profile para: ' . $request->email);
-            return redirect()->route('complete-profile');
+            return redirect()->route('personal.create');
         }
 
         // Redirigir a la página de usuarios

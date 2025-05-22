@@ -13,12 +13,28 @@ class SedesController extends Controller
      */
     public function index()
     {
-        $sedes = DB::table('sedes')
+        $user = auth()->user();
+
+        if($user->UsRol == 'Administrador'){
+            $sedes = DB::table('sedes')
             ->where('DeleteSedes', 0)
             ->orderBy('Id_Sede', 'asc')
             ->paginate(10);
 
         return view('sedes.index', compact('sedes'));
+
+        } else {
+
+        $sedes = DB::table('sedes')
+            ->join('personas', 'personas.Id_Peronsa', '=', 'sedes.FK_Persona')
+            ->join('clientes', 'clientes.Id_Cliente', '=', 'personas.FK_PersCliente')
+            ->where('DeleteSedes', 0)
+            ->where('clientes.FK_ClienteUser', $user->Id_User)
+            ->orderBy('Id_Sede', 'asc')
+            ->paginate(10);
+
+        return view('sedes.index', compact('sedes'));
+        }
     }
 
     /**
@@ -26,11 +42,12 @@ class SedesController extends Controller
      */
     public function create()
     {
+        $user = auth()->user();
 
         $personas = DB::table('personas')
-            ->where('DeletePersona', 0)
-            ->orderBy('Id_Peronsa', 'asc')
-            ->get();
+            ->join('clientes', 'personas.FK_PersCliente', '=', 'clientes.Id_Cliente')
+            ->where('clientes.FK_ClienteUser', $user->Id_User)
+            ->get();  
 
         $sedes = DB::table('sedes')
             ->where('DeleteSedes', 0)
@@ -39,7 +56,6 @@ class SedesController extends Controller
             
         $jsonSedes = json_encode($sedes); //Conivierte los datos de la consulta sedes a JSON para utilizarlos en el javascript del mapa    
 
-        ;
         return view('sedes.create', compact('personas', 'sedes'));
     }
 
@@ -69,7 +85,7 @@ class SedesController extends Controller
         $sede->DeleteSedes = 0;
         $sede->save();
 
-        return redirect()->route('personal.index')->with('success', 'Sede creada correctamente.');
+        return redirect()->route('sedes.index')->with('success', 'Sede creada correctamente.');
 
     }
 
