@@ -76,6 +76,29 @@
                             </div>
                         </div>
 
+                        @if($user->cliente)
+                        <hr class="my-4">
+                        <h5 class="mb-3">Información del Cliente</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <h6 class="text-muted mb-1">Tipo de Documento</h6>
+                                    <p>{{ $user->cliente->ClientDocType ?: 'N/A' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="text-muted mb-1">Número de Documento</h6>
+                                    <p>{{ $user->cliente->ClientDocumento ?: 'N/A' }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <h6 class="text-muted mb-1">Teléfono</h6>
+                                    <p>{{ $user->cliente->telefono ?: 'N/A' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5>Información Adicional</h5>

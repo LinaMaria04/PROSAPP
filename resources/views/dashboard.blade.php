@@ -48,7 +48,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Mi Perfil</h5>
                                     <p class="card-text">Gestiona tu información personal y contraseña.</p>
-                                    <a href="{{ route('users.profile') }}" class="btn btn-primary">Ver Perfil</a>
+                                    <a href="{{ route('profile.show') }}" class="btn btn-primary">Ver Perfil</a>
                                 </div>
                             </div>
                         </div>

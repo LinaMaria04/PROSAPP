@@ -63,7 +63,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas para usuarios autenticados (verificación de permisos en controladores)
     Route::get('/usuarios-prosarc/crear', [UsersController::class, 'createProsarc'])->name('usuarios-prosarc.create');
-    Route::post('/usuarios-prosarc', [UsersController::class, 'storeProsarc'])->name('usuarios-prosarc.store');
+    Route::post('/usuarios-prosarc', [UsersController::class, 'index'])->name('users.index');
     Route::resource('users', UsersController::class);
     Route::post('/changerol/{id}', [UserController::class, 'changeRol'])->name('changeRol');
     
@@ -78,7 +78,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Perfil de usuario
-    Route::get('/profile', [UserController::class, 'profile'])->name('users.profile');
-    Route::get('/profile/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::put('/profile/update', [UserController::class, 'update'])->name('users.update');
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.show');
+    Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [UserController::class, 'update'])->name('profile.update');
+
+    // Rutas de usuarios
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
+    Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
 });
