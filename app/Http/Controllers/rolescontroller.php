@@ -46,9 +46,8 @@ class RolesController extends Controller
      */
     public function edit(string $id)
     {
-       $user = User::findOrFail($id);
-       $roles = DB::table('roles')->pluck('Rol');//solo traemos los reoles de la base de datos
-       return view('users.edit', compact('user', 'roles'));
+       $role = DB::table('roles')->find($id);
+       return view('roles.edit', compact('role'));
     }
 
     /**

@@ -66,12 +66,7 @@
                                         <th>Email</th>
                                         <th>Rol</th>
                                         <th>Estado</th>
-                                        <th>Ver</th>
-                                        {{-- Solo administradores pueden editar y eliminar --}}
-                                        @if(App\Permisos::check(App\Permisos::ADMINISTRADORES))
-                                            <th>Editar</th>
-                                            <th>Eliminar</th>
-                                        @endif
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -88,28 +83,25 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="{{ route('users.show', $user->UserSlug) }}" class="btn btn-info">
-                                                    <i class='bx bx-show'></i> Ver
+                                                <a href="{{ route('users.show', $user->UserSlug) }}" class="btn btn-info btn-sm">
+                                                    <i class='bx bx-show'></i>
                                                 </a>
-                                            </td>
-                                            
-                                            {{-- Solo administradores pueden editar y eliminar --}}
-                                            @if(App\Permisos::check(App\Permisos::ADMINISTRADORES))
-                                                <td>    
-                                                    <a href="{{ route('users.edit', $user->UserSlug) }}" class="btn btn-warning">
-                                                        <i class='bx bx-edit'></i> Editar
+                                                
+                                                {{-- Solo administradores pueden editar y eliminar --}}
+                                                @if(App\Permisos::check(App\Permisos::ADMINISTRADORES))
+                                                    <a href="{{ route('users.edit', $user->UserSlug) }}" class="btn btn-warning btn-sm">
+                                                        <i class='bx bx-edit'></i>
                                                     </a>
-                                                </td>
-                                                <td>    
+                                                    
                                                     <form action="{{ route('users.destroy', $user->UserSlug) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
-                                                            <i class='bx bx-trash'></i> Eliminar
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                                            <i class='bx bx-trash'></i>
                                                         </button>
-                                                    </form>    
-                                                </td>
-                                            @endif
+                                                    </form>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

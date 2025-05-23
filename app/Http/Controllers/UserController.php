@@ -19,6 +19,7 @@ class UserController extends Controller
         $user = Auth::user();
         $user->load('cliente'); // Cargar la relación cliente
         return view('users.profile', compact('user'));
+
     }
 
     /**

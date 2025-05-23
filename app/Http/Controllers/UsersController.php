@@ -16,10 +16,35 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = DB::table('users')
-            ->where('DeleteUser', 0)
-            ->orderBy('Id_User', 'asc')
-            ->paginate(10);
+        $currentUser = auth()->user();
+        
+        // Si es administrador, mostrar todos los usuarios
+        if ($currentUser->UsRol === 'Administrador' || Permisos::check(Permisos::ADMINISTRADORES)) {
+            $users = DB::table('users')
+                ->where('DeleteUser', 0)
+                ->orderBy('Id_User', 'asc')
+                ->paginate(10);
+        } 
+        // Si es cliente, mostrar solo los usuarios asociados al cliente
+        elseif (strtolower(trim($currentUser->UsRol)) === 'cliente') {
+            // Buscar usuarios relacionados con el cliente actual
+            // Por ahora, solo se muestra el usuario actual
+            $users = DB::table('users')
+                ->where('DeleteUser', 0)
+                ->where(function($query) use ($currentUser) {
+                    $query->where('Id_User', $currentUser->Id_User);
+                })
+                ->orderBy('Id_User', 'asc')
+                ->paginate(10);
+        } 
+        // Para otros roles, solo mostrar su propio usuario
+        else {
+            $users = DB::table('users')
+                ->where('DeleteUser', 0)
+                ->where('Id_User', $currentUser->Id_User)
+                ->orderBy('Id_User', 'asc')
+                ->paginate(10);
+        }
 
         return view('users.index', compact('users'));
     }

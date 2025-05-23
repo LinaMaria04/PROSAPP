@@ -12,7 +12,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\rolescontroller;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\FacturacionController;
 use App\Permisos;
 // Rutas públicas
 Route::get('/', function () {
@@ -65,6 +66,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/usuarios-prosarc/crear', [UsersController::class, 'createProsarc'])->name('usuarios-prosarc.create');
     Route::post('/usuarios-prosarc', [UsersController::class, 'index'])->name('users.index');
     Route::resource('users', UsersController::class);
+    Route::resource('roles', RolesController::class);
     Route::post('/changerol/{id}', [UserController::class, 'changeRol'])->name('changeRol');
     
     // Completar perfil
@@ -74,10 +76,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Logout
+   // Perfil de usuario
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    // Perfil de usuario
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.show');
     Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [UserController::class, 'update'])->name('profile.update');
@@ -88,4 +88,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
     Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
+    
+    // Facturación electrónica
+    Route::get('/facturacion', [FacturacionController::class, 'show'])->name('facturacion.show');
+    Route::get('/facturacion/edit', [FacturacionController::class, 'edit'])->name('facturacion.edit');
+    Route::put('/facturacion/update', [FacturacionController::class, 'update'])->name('facturacion.update');
+
 });
