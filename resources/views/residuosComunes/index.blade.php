@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sedes - ProsarApp</title>
+    <title>Residuos Comunes - ProsarApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
     <style>
@@ -53,14 +53,14 @@
 
     <div class="container">
         <div class="row">
-                @include('layouts.aside')
+            @include('layouts.aside')
             <div class="col sm-9">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="card-title mb-0">Lista de Sedes</h4>
-                            <a href="{{ route('sedes.create') }}" class="btn btn-primary">
-                                <i class='bx bx-plus-circle'></i> Crear Sedes
+                            <h4 class="card-title mb-0">Lista de Residuos Comunes</h4>
+                            <a href="{{ route('residuoscomunes.create') }}" class="btn btn-primary">
+                                <i class='bx bx-plus-circle'></i> Crear Residuos
                             </a>
                         </div>
 
@@ -69,57 +69,74 @@
                                 {{ session('success') }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                        @endif
+                        @endif 
 
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Nombre de sede</th>
-                                        <th>Direccion</th>
-                                        <th>Localidad</th>
+                                        <th>Nombre de residuo</th>
+                                        <th>Clasificación</th>
+                                        <th>Hoja de Seguridad</th>
+                                        <th>Tarjeta de Emergencia</th>
                                         <th>Ver</th>
                                         <th>Editar</th>
                                         <th>Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($sedes as $sede)
+                                    @foreach($residuos as $residuo)
                                         <tr>
-                                            <td>{{$sede->NombreSede}}</td>
-                                            <td>{{$sede->Direccion}}</td>
-                                            <td>{{$sede->SedeMapLocalidad}}</td>
+                                            <td>{{$residuo->RespelName}}</td>
+                                            @if($residuo->YRespelClasf4741 <> null)
+                                                <td class="text-center">{{$residuo->YRespelClasf4741}}</td>
+                                            @elseif($residuo->ARespelClasf4741 <> null)
+                                                <td class="text-center">{{$residuo->ARespelClasf4741}}</td>
+                                            @else
+                                                <td class="text-center">N/D</td>
+                                            @endif
+
+                                            @if($residuo->RespelHojaSeguridad!=="RespelHojaDefault.pdf")
+                                                <td class="text-center"><a method='get' href='/img/HojaSeguridad/{{$residuo->RespelHojaSeguridad}}' target='_blank' class='btn btn-success'><i class='fas fa-file-pdf fa-lg'></a></td>
+                                            @else
+                                                <td class="text-center"><a disabled method='get' href='/img/{{$residuo->RespelHojaSeguridad}}' class='btn btn-default'><i class='fas fa-file-pdf fa-lg'></a></td>
+                                            @endif
+
+                                            @if($residuo->RespelTarj!=="RespelTarjetaDefault.pdf")
+                                                <td class="text-center"><a method='get' href='/img/TarjetaEmergencia/{{$residuo->RespelTarj}}' target='_blank' class='btn btn-success'><i class='fas fa-file-pdf fa-lg'></a></td>
+                                            @else
+                                                <td class="text-center"><a disabled method='get' href='/img/{{$residuo->RespelTarj}}' class='btn btn-default'><i class='fas fa-file-pdf fa-lg'></a></td>
+                                            @endif
                                             <td>
-                                                <a href="/sedes/{{$sede->SedeSlug}}" class="btn btn-info">
+                                                <a href="/residuoscomunes/{{$residuo->RespelSlug}}" class="btn btn-info">
                                                     <i class='bx bx-show' type="submit"></i> Ver
                                                 </a>
                                             </td>
                                             <td>    
-                                                <a href="/sedes/{{$sede->SedeSlug}}/edit" class="btn btn-warning">
+                                                <a href="/residuoscomunes/{{$residuo->RespelSlug}}/edit" class="btn btn-warning">
                                                     <i class='bx bx-edit'></i>Editar
                                                 </a>
-                                            </td>    
+                                            </td>   
                                             <td>    
-                                                <a method='get' href='#' data-toggle='modal' data-target='#myModal{{$sede->SedeSlug}}' class='btn btn-danger pull-left'>
-                                                <form action='{{route('sedes.destroy', $sede->SedeSlug)}}' method='POST'  class="col-12 pull-right">
+                                                <a method='get' href='#' data-toggle='modal' data-target='#myModal{{$residuo->RespelSlug}}' class='btn btn-danger pull-left'>
+                                                <form action='{{route('residuoscomunes.destroy', $residuo->RespelSlug)}}' method='POST'  class="col-12 pull-right">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este registro?')">
                                                         <i class='bx bx-trash'></i> Eliminar
                                                     </button>
                                                 </form>
-                                            </td> 
+                                            </td>                                              
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
 
-                        @if($sedes->hasPages())
                             <div class="mt-4">
-                                {{ $sedes->links() }}
+                               
                             </div>
-                        @endif
+                        
                     </div>
                 </div>    
             </div>
