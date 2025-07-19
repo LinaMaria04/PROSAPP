@@ -81,19 +81,17 @@
                                                 <a href="/sedes/{{$sede->SedeSlug}}/edit" class="btn btn-warning">
                                                     <i class='bx bx-edit'></i>Editar
                                                 </a>
-                                            </td>
+                                            </td>    
                                             <td>    
-                                                <td>    
-                                                    <a method='get' href='#' data-toggle='modal' data-target='#myModal{{$sede->SedeSlug}}' class='btn btn-danger pull-left'>
-                                                    <form action='{{route('sedes.destroy', $sede->SedeSlug)}}' method='POST'  class="col-12 pull-right">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este registro?')">
-                                                            <i class='bx bx-trash'></i> Eliminar
-                                                        </button>
-                                                    </form>
-                                                </td>  
-                                            </td>
+                                                <a method='get' href='#' data-toggle='modal' data-target='#myModal{{$sede->SedeSlug}}' class='btn btn-danger pull-left'>
+                                                <form action='{{route('sedes.destroy', $sede->SedeSlug)}}' method='POST'  class="col-12 pull-right">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este registro?')">
+                                                        <i class='bx bx-trash'></i> Eliminar
+                                                    </button>
+                                                </form>
+                                            </td> 
                                         </tr>
                                     @endforeach
                                 </tbody>
