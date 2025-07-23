@@ -6,6 +6,7 @@ use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SedesController;
+use App\Http\Controllers\ResiduosComunesController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -27,7 +28,6 @@ Route::prefix('personal')->group(function () {
 
 //Rutas de sedes
 Route::resource('sedes', SedesController::class);
-
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {

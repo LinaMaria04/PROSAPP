@@ -38,7 +38,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">Roles</h5>
                                     <p class="card-text">Administra los roles y permisos.</p>
-                                    <a href="{{ route('roles.index') }}" class="btn btn-primary">Ver Roles</a>
+                                    <a href="" class="btn btn-primary">Ver Roles</a>
                                 </div>
                             </div>
                         </div>

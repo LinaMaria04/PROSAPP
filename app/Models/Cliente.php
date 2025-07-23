@@ -22,7 +22,6 @@ class Cliente extends Model
         'ClientSlug',
         'ClientRut',
         'CorreoFE',
-        'FK_PersCliente',
         'ClientStatus',
         'TipoFacturacion',
         'FK_ClienteUser'

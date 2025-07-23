@@ -228,16 +228,9 @@ class RegisterController extends Controller
 
             DB::beginTransaction();
             try {
-                // Generar UserSlug único
-                $baseSlug = Str::slug($step1Data['razon_social']);
-                $userSlug = $baseSlug;
-                $counter = 1;
-
-                // Verificar si el slug existe y generar uno único
-                while (User::where('UserSlug', $userSlug)->exists()) {
-                    $userSlug = $baseSlug . '-' . $counter;
-                    $counter++;
-                }
+                // Generar UserSlug aleatorio y único
+                $apellido = $step1Data['apellido'] ?? $step1Data['razon_social'] ?? '';
+                $userSlug = hash('sha256', rand().time().$apellido);
 
                 // Crear el usuario
                 $user = User::create([
