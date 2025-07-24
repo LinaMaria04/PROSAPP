@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('solicitudes_servicio', function (Blueprint $table) {
             $table->id('ID_SolSer');
-            $table->string('NumFactura')->unique();
+            $table->string('NumFactura')->unique()->nullable();
             $table->date('FechaSolicitud');
+            $table->string('SolSerSlug')->nullable();
             $table->string('Estado');
             $table->text('Observaciones')->nullable();
+            $table->tinyInteger('SolSerDelete')->nullable()->default(0);
             $table->timestamps();
         });
     }
