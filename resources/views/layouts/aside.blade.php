@@ -4,5 +4,6 @@
         <li class="list-group-item"><a href="{{ route('personal.index') }}">Personal</a></li>
         <li class="list-group-item"><a href="{{ route('sedes.index') }}">Sedes</a></li>
         <li class="list-group-item"><a href="{{ route('residuoscomunes.index') }}">Residuos Comunes</a></li>
+        <li class="list-group-item"><a href="{{ route('solservicios.index') }}">Solicitud de Servicios</a></li>
     </ul>
 </div>

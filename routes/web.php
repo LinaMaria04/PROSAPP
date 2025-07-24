@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\rolescontroller;
+use App\Http\Controllers\SolicitudServicioController;
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
@@ -28,6 +29,12 @@ Route::prefix('personal')->group(function () {
 
 //Rutas de sedes
 Route::resource('sedes', SedesController::class);
+
+//Rutas de residuos comunes
+Route::resource('residuoscomunes',ResiduosComunesController::class);  
+
+//Rutas de solicitud de servicios
+Route::resource('solservicios',SolicitudServicioController::class);
 
 // Grupo de rutas de autenticación
 Route::middleware('guest')->group(function () {

@@ -41,7 +41,7 @@ class ResiduosComunesController extends Controller
     public function store(Request $request)
     {
 
-         $request->validate([
+        $request->validate([
             'respelname' => 'required|string|max:255',
             'respeldescripcion' => 'required|string|max:255',
             'estadofisico' => 'required|string',
