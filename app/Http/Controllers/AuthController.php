@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -117,6 +118,60 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         return view('auth.login');
+    }
+
+    public function apiLogin(Request $request)
+    {
+        Log::info('Se llamó a apiLogin');
+        Log::info('Intento de inicio de sesión API para: ' . $request->email);
+
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            Log::info('Usuario no encontrado: ' . $request->email);
+            return response()->json([
+                'message' => 'El correo electrónico no está registrado.',
+            ], 404);
+        }
+
+        if (!Hash::check($credentials['password'], $user->password)) {
+            Log::info('Contraseña incorrecta para: ' . $request->email);
+            return response()->json([
+                'message' => 'La contraseña es incorrecta.',
+            ], 401);
+        }
+
+        if (!$user->email_verified_at) {
+            Log::info('Correo no verificado para: ' . $request->email);
+            return response()->json([
+                'message' => 'Por favor verifica tu correo electrónico.',
+            ], 403);
+        }
+
+        if (!$user->is_active) {
+            Log::info('Cuenta inactiva para: ' . $request->email);
+            return response()->json([
+                'message' => 'Tu cuenta está inactiva. Contacta al administrador.',
+            ], 403);
+        }
+
+        // Si todo está bien, puedes devolver información del usuario (¡sin la contraseña!)
+        Log::info('Inicio de sesión exitoso para: ' . $request->email);
+        return response()->json([
+            'message' => 'Login exitoso',
+            'usuario' => [
+                'id' => $user->id,
+                'nombre' => $user->name ?? '',
+                'email' => $user->email,
+                'rol' => $user->UsRol,
+                'perfil_completo' => $user->UsRol === 'cliente' ? !is_null($user->FK_UserPersona) : true,
+            ],
+        ], 200);
     }
 
     public function login(Request $request)

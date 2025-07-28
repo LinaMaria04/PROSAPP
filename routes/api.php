@@ -11,8 +11,13 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 // Rutas de autenticación
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'apiLogin']);
+//Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+Route::get('/ping', function () {
+    return response()->json(['message' => 'API activa']);
+});
 
 // Rutas de registro
 Route::prefix('auth')->middleware(['web'])->group(function () {
