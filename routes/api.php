@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SedesController;
 use App\Http\Controllers\Auth\RegisterController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -14,6 +15,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'apiLogin']);
 //Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+//Rutas de SEDES
+Route::get('/sedespersonas', [SedesController::class, 'personas']);
+Route::post('/sedes/create', [SedesController::class, 'store']);
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Sedes;
+use Illuminate\Support\Facades\Log;
 
 class SedesController extends Controller
 {
@@ -42,6 +43,8 @@ class SedesController extends Controller
      */
     public function create()
     {
+        Log::info('Si esta entrando a la creación de sedes');
+
         $user = auth()->user();
 
         $personas = DB::table('personas')
@@ -49,14 +52,39 @@ class SedesController extends Controller
             ->where('clientes.FK_ClienteUser', $user->Id_User)
             ->get();  
 
-        $sedes = DB::table('sedes')
+       /* $sedes = DB::table('sedes')
             ->where('DeleteSedes', 0)
             ->orderBy('Id_Sede', 'asc')
             ->get();
             
         $jsonSedes = json_encode($sedes); //Conivierte los datos de la consulta sedes a JSON para utilizarlos en el javascript del mapa    
 
-        return view('sedes.create', compact('personas', 'sedes'));
+       //return view('sedes.create', compact('personas', 'sedes'));*/
+
+       return response()->json([
+        'personas' => $personas,
+       ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function personas()
+    {
+        Log::info('Si esta entrando a la creación de sedes');
+
+        $user = auth()->user();
+
+        $personas = DB::table('personas')
+            ->join('clientes', 'personas.FK_PersCliente', '=', 'clientes.Id_Cliente')
+            //->where('clientes.FK_ClienteUser', $user->Id_User)
+            ->select('*')
+            ->get();  
+
+        Log::info('Estos son los resultados: ' . $personas);
+       return response()->json([
+        'personas' => $personas,
+       ]);
     }
 
     /**
@@ -64,28 +92,34 @@ class SedesController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Información recibida para creación de sede');
         //Desgloce de dirección seleccionada en el mapa
-        $direccionmapa = explode(',', $request->SedeMapAddressSearch);
-        $direccion = $direccionmapa[0];
-        $localidad = $direccionmapa[1];
-        $ciudad = $direccionmapa[2];
+        $direccionmapa = $request->Direccion;
+
+        $direccion = $request->Direccion;
+        $localidad = "";
+        $ciudad = "";
 
         $sede = new Sedes();
-        $sede->FK_Persona = $request->persencargada;
-        $sede->NombreSede = $request->sedename;
+        $sede->FK_Persona = $request->Persona;
+        $sede->NombreSede = $request->NombreSede;
         $sede->Direccion = $direccion;
-        $sede->SedeMapAddressSearch = $request->SedeMapAddressSearch;
-        $sede->SedeMapAddressResult = $request->SedeMapAddressSearch;
-        $sede->SedeMapLat = $request->latitud;
-        $sede->SedeMapLong = $request->longitud;
+        $sede->SedeMapAddressSearch = $request->Direccion;
+        $sede->SedeMapAddressResult = $request->Direccion;
+        $sede->SedeMapLat = $request->Latitud;
+        $sede->SedeMapLong = $request->Longitud;
         $sede->SedeMapLocalidad = $localidad;
         $sede->SedeSlug = hash('sha256', rand() . time() . $direccion);
-        $sede->Correo = $request->correo;
-        $sede->telefono = $request->telefono;
+        $sede->Correo = $request->Correo;
+        $sede->telefono = $request->Telefono;
         $sede->DeleteSedes = 0;
         $sede->save();
 
-        return redirect()->route('sedes.index')->with('success', 'Sede creada correctamente.');
+        Log::info('Sede Creada');
+
+        return response()->json([
+            'message' => 'Sede Creada',
+        ], 200);
 
     }
 
