@@ -97,7 +97,7 @@ class SedesController extends Controller
         $direccionmapa = $request->Direccion;
 
         $direccion = $request->Direccion;
-        $localidad = "";
+        $localidad = $request->Localidad;
         $ciudad = "";
 
         $sede = new Sedes();
