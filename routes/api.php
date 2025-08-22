@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 //Rutas de SEDES
 Route::get('/sedespersonas', [SedesController::class, 'personas']);
 Route::post('/sedes/create', [SedesController::class, 'store']);
+Route::get('/empresasedes', [sedesController::class, 'index']);
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);

@@ -14,28 +14,21 @@ class SedesController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-
-        if($user->UsRol == 'Administrador'){
-            $sedes = DB::table('sedes')
-            ->where('DeleteSedes', 0)
-            ->orderBy('Id_Sede', 'asc')
-            ->paginate(10);
-
-        return view('sedes.index', compact('sedes'));
-
-        } else {
-
+    Log::info('Si esta entrando a index sedes');
         $sedes = DB::table('sedes')
             ->join('personas', 'personas.Id_Peronsa', '=', 'sedes.FK_Persona')
             ->join('clientes', 'clientes.Id_Cliente', '=', 'personas.FK_PersCliente')
             ->where('DeleteSedes', 0)
-            ->where('clientes.FK_ClienteUser', $user->Id_User)
+            //->where('clientes.FK_ClienteUser', $user->Id_User)
             ->orderBy('Id_Sede', 'asc')
-            ->paginate(10);
+            ->get();
 
-        return view('sedes.index', compact('sedes'));
-        }
+        Log::info('Estos son los resultados: ' . $sedes);
+
+        return response()->json([
+            'sedes' => $sedes,
+        ]);
+        
     }
 
     /**
