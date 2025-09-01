@@ -140,20 +140,18 @@ class SedesController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {   
+    {
         $sede = DB::table('sedes')
-            ->where('SedeSlug', $id)
+            ->join('personas', 'personas.Id_Peronsa', '=', 'sedes.FK_Persona')
+            ->where('Id_Sede', $id)
             ->select('*')
             ->first();
 
-        $personas = DB::table('personas')
-            ->where('DeletePersona', 0)
-            ->orderBy('Id_Peronsa', 'asc')
-            ->get();
-    
-        $jsonSede = json_encode($sede); //Conivierte los datos de la consulta sede a JSON para utilizarlos en el javascript del mapa
+        Log::info('Estos son los datos de la sede seleccionada: ' . json_encode($sede));
 
-        return view('sedes.edit', compact('sede', 'personas'));
+        return response()->json([
+            'sede' => $sede,
+        ]);
     }
 
     /**
@@ -161,29 +159,29 @@ class SedesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
-        //Desgloce de dirección seleccionada en el mapa
-        $direccionmapa = explode(',', $request->SedeMapAddressSearch);
-        $direccion = $direccionmapa[0];
-        $localidad = $direccionmapa[1];
-        $ciudad = $direccionmapa[2];
+        Log::info('Información recibida' .$request . ' para Editar la sede'. $id);
 
         DB::table('sedes')
-            ->where('SedeSlug', $id)
+            ->where('Id_Sede', $id)
             ->update([
-                'FK_Persona' => $request->persencargada,
-                'NombreSede' => $request->sedename,
-                'Direccion' => $direccion,
-                'SedeMapAddressSearch' => $request->SedeMapAddressSearch,
-                'SedeMapAddressResult' => $request->SedeMapAddressSearch,
-                'SedeMapLat'=> $request->latitud,
-                'SedeMapLong' => $request->longitud,
-                'SedeMapLocalidad' => $localidad,
-                'Correo' => $request->correo,
-                'telefono' => $request->telefono,
+                'FK_Persona' => $request->Persona,
+                'NombreSede' => $request->NombreSede,
+                'Direccion' => $request->Direccion,
+                'SedeMapAddressSearch' => $request->Direccion,
+                'SedeMapAddressResult' => $request->Direccion,
+                'SedeMapLat'=> $request->Latitud,
+                'SedeMapLong' => $request->Longitud,
+                'SedeMapLocalidad' => $request->Localidad,
+                'Correo' => $request->Correo,
+                'telefono' => $request->Telefono,
             ]);
 
-            return redirect()->route('sedes.index')->with('success', 'Persona actualizada correctamente.');
+        Log::info('Sede Actualizada');
+
+        return response()->json([
+            'message' => 'Sede Actualizada',
+        ], 200);
+
     }
 
     /**

@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::get('/sedespersonas', [SedesController::class, 'personas']);
 Route::post('/sedes/create', [SedesController::class, 'store']);
 Route::get('/empresasedes', [sedesController::class, 'index']);
+Route::get('/sede/edit/{id}', [sedesController::class, 'edit']);
+Route::post('/sede/updated/{id}', [sedesController::class, 'update']);
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);
