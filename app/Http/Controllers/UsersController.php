@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Permisos;
 
 class UsersController extends Controller
 {
@@ -15,10 +16,35 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = DB::table('users')
-            ->where('DeleteUser', 0)
-            ->orderBy('Id_User', 'asc')
-            ->paginate(10);
+        $currentUser = auth()->user();
+        
+        // Si es administrador, mostrar todos los usuarios
+        if ($currentUser->UsRol === 'Administrador' || Permisos::check(Permisos::ADMINISTRADORES)) {
+            $users = DB::table('users')
+                ->where('DeleteUser', 0)
+                ->orderBy('Id_User', 'asc')
+                ->paginate(10);
+        } 
+        // Si es cliente, mostrar solo los usuarios asociados al cliente
+        elseif (strtolower(trim($currentUser->UsRol)) === 'cliente') {
+            // Buscar usuarios relacionados con el cliente actual
+            // Por ahora, solo se muestra el usuario actual
+            $users = DB::table('users')
+                ->where('DeleteUser', 0)
+                ->where(function($query) use ($currentUser) {
+                    $query->where('Id_User', $currentUser->Id_User);
+                })
+                ->orderBy('Id_User', 'asc')
+                ->paginate(10);
+        } 
+        // Para otros roles, solo mostrar su propio usuario
+        else {
+            $users = DB::table('users')
+                ->where('DeleteUser', 0)
+                ->where('Id_User', $currentUser->Id_User)
+                ->orderBy('Id_User', 'asc')
+                ->paginate(10);
+        }
 
         return view('users.index', compact('users'));
     }
@@ -28,7 +54,11 @@ class UsersController extends Controller
      */
     public function create()
     {
-        return view('users.create');
+        $roles = null;
+        if (auth()->user()->UsRol === 'Administrador') {
+            $roles = DB::table('roles')->pluck('Rol');
+        }
+        return view('users.create', compact('roles'));
     }
 
     /**
@@ -36,18 +66,23 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'Nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'UsRol' => 'required',
-        ]);
+        ];
+
+        if (Permisos::check(Permisos::ADMINISTRADORES)) {
+            $rules['UsRol'] = 'required';
+        }
+
+        $request->validate($rules);
 
         $user = new User();
         $user->Nombre = $request->Nombre;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->UsRol = $request->UsRol;
+        $user->UsRol = auth()->user()->UsRol === 'Administrador' ? $request->UsRol : 'cliente';
         $apellido = $request->Apellidos;
         $user->UserSlug = hash('sha256', rand().time().$apellido);
         $user->is_active = 1;
@@ -71,6 +106,12 @@ class UsersController extends Controller
      */
     public function edit(string $id)
     {
+        // Verificar si el usuario tiene permisos de administrador
+        if (!Permisos::check(Permisos::ADMINISTRADORES)) {
+            return redirect()->route('users.index')
+                ->with('error', 'No tienes permiso para editar usuarios');
+        }
+        
         $user = User::where('UserSlug', $id)->firstOrFail();
         return view('users.edit', compact('user'));
     }
@@ -80,18 +121,26 @@ class UsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Verificar si el usuario tiene permisos de administrador
+        if (!Permisos::check(Permisos::ADMINISTRADORES)) {
+            return redirect()->route('users.index')
+                ->with('error', 'No tienes permiso para actualizar usuarios');
+        }
+        
         $user = User::where('UserSlug', $id)->firstOrFail();
         
         $request->validate([
             'Nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->Id_User.',Id_User',
             'UsRol' => 'required',
+            'is_active' => 'required|boolean',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $user->Nombre = $request->Nombre;
         $user->email = $request->email;
         $user->UsRol = $request->UsRol;
+        $user->is_active = $request->is_active;
         
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);

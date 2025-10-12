@@ -13,7 +13,9 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\rolescontroller;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\FacturacionController;
+use App\Permisos;
 use App\Http\Controllers\SolicitudServicioController;
 // Rutas públicas
 Route::get('/', function () {
@@ -67,6 +69,13 @@ Route::middleware('guest')->group(function () {
 
 // Rutas que requieren autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Rutas para usuarios autenticados (verificación de permisos en controladores)
+    Route::get('/usuarios-prosarc/crear', [UsersController::class, 'createProsarc'])->name('usuarios-prosarc.create');
+    Route::post('/usuarios-prosarc', [UsersController::class, 'index'])->name('users.index');
+    Route::resource('users', UsersController::class);
+    Route::resource('roles', RolesController::class);
+    Route::post('/changerol/{id}', [UserController::class, 'changeRol'])->name('changeRol');
+    
     // Completar perfil
     Route::get('/complete-profile', [AuthController::class, 'showCompleteProfileForm'])->name('complete-profile');
     Route::post('/complete-profile', [AuthController::class, 'completeProfile'])->name('complete-profile.submit');
@@ -74,25 +83,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Logout
+   // Perfil de usuario
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.show');
+    Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [UserController::class, 'update'])->name('profile.update');
 
-    // Perfil de usuario
-    Route::get('/profile', [UserController::class, 'profile'])->name('users.profile');
-    Route::get('/profile/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::put('/profile/update', [UserController::class, 'update'])->name('users.update');
-
-    // Recursos
-    // Comentado temporalmente hasta que se implemente el RoleController
-    /*
-    Route::resource('roles', RoleController::class);
-    Route::prefix('roles')->group(function () {
-        Route::get('/permissions/{role}', [RoleController::class, 'permissions'])->name('roles.permissions');
-        Route::post('/permissions/{role}', [RoleController::class, 'updatePermissions'])->name('roles.update-permissions');
-    });
-    */
+    // Rutas de usuarios
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
+    Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
     
-    // Administración de usuarios
-    Route::resource('users', UsersController::class);   
-    Route::post('/changerol/{id}', [UserController::class, 'changeRol'])->name('changeRol');
+    // Facturación electrónica
+    Route::get('/facturacion', [FacturacionController::class, 'show'])->name('facturacion.show');
+    Route::get('/facturacion/edit', [FacturacionController::class, 'edit'])->name('facturacion.edit');
+    Route::put('/facturacion/update', [FacturacionController::class, 'update'])->name('facturacion.update');
+
 });

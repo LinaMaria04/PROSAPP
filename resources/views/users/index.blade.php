@@ -42,9 +42,13 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="card-title mb-0">Lista de Usuarios</h4>
-                            <a href="{{ route('users.create') }}" class="btn btn-primary">
-                                <i class='bx bx-plus-circle'></i> Agregar Usuario
-                            </a>
+                            
+                            {{-- Solo administradores pueden crear usuarios --}}
+                            @if(App\Permisos::check(App\Permisos::ADMINISTRADORES))
+                                <a href="{{ route('users.create') }}" class="btn btn-primary">
+                                    <i class='bx bx-plus-circle'></i> Agregar Usuario
+                                </a>
+                            @endif
                         </div>
 
                         @if(session('success'))
@@ -62,9 +66,7 @@
                                         <th>Email</th>
                                         <th>Rol</th>
                                         <th>Estado</th>
-                                        <th>Ver</th>
-                                        <th>Editar</th>
-                                        <th>Eliminar</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -81,23 +83,24 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="{{ route('users.show', $user->UserSlug) }}" class="btn btn-info">
-                                                    <i class='bx bx-show'></i> Ver
+                                                <a href="{{ route('users.show', $user->UserSlug) }}" class="btn btn-info btn-sm">
+                                                    <i class='bx bx-show'></i>
                                                 </a>
-                                            </td>
-                                            <td>    
-                                                <a href="{{ route('users.edit', $user->UserSlug) }}" class="btn btn-warning">
-                                                    <i class='bx bx-edit'></i> Editar
-                                                </a>
-                                            </td>
-                                            <td>    
-                                                <form action="{{ route('users.destroy', $user->UserSlug) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
-                                                        <i class='bx bx-trash'></i> Eliminar
-                                                    </button>
-                                                </form>    
+                                                
+                                                {{-- Solo administradores pueden editar y eliminar --}}
+                                                @if(App\Permisos::check(App\Permisos::ADMINISTRADORES))
+                                                    <a href="{{ route('users.edit', $user->UserSlug) }}" class="btn btn-warning btn-sm">
+                                                        <i class='bx bx-edit'></i>
+                                                    </a>
+                                                    
+                                                    <form action="{{ route('users.destroy', $user->UserSlug) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                                            <i class='bx bx-trash'></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

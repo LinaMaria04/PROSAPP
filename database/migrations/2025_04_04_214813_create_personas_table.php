@@ -19,7 +19,7 @@ return new class extends Migration
         $table->string('SegundoNombre')->nullable();
         $table->string('Apellidos');
         $table->string('Telefono')->nullable();
-        $table->tinyInteger('FK_PersCliente')->nullable(); // FK a clientes si es necesario
+        $table->foreignId('FK_PersCliente')->nullable(); // FK a clientes
         $table->string('PersSlug')->nullable();
         $table->timestamps(); // created_at y updated_at
         $table->integer('DeletePersona')->default(0);

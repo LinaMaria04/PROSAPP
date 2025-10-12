@@ -19,6 +19,12 @@ return new class extends Migration
             $table->string('direccion');            // Dirección
             $table->string('telefono');             // Teléfono
             $table->foreignId('FK_TipoComercio')->nullable()->constrained('tipo_comercio', 'Id_Comercio');  // Tipo de Comercio
+            $table->string('ClientSlug')->nullable();
+            $table->string('ClientRut')->nullable();
+            $table->string('CorreoFE')->nullable();
+            $table->tinyInteger('FK_PersCliente')->nullable(); 
+            $table->string('ClientStatus')->nullable();
+            $table->string('TipoFacturacion')->nullable();
         $table->string('ClientSlug')->nullable();
         $table->string('ClientRut')->nullable();
         $table->string('CorreoFE')->nullable();
