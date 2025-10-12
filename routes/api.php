@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SedesController;
+use App\Http\Controllers\SolicitudServicioController;
 use App\Http\Controllers\Auth\RegisterController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -22,6 +23,11 @@ Route::post('/sedes/create', [SedesController::class, 'store']);
 Route::get('/empresasedes', [sedesController::class, 'index']);
 Route::get('/sede/edit/{id}', [sedesController::class, 'edit']);
 Route::post('/sede/updated/{id}', [sedesController::class, 'update']);
+
+//Rutas de Servicios
+Route::get('/servicios/sedes', [SolicitudServicioController::class, 'sedescliente']);
+Route::get('/servicios/residuos', [SolicitudServicioController::class, 'residuos']);
+Route::post('/servicios/create', [SolicitudServicioController::class, 'store']);
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);

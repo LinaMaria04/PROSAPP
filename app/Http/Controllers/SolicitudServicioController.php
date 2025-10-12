@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Solser;
 use App\Models\Solserrespel;
+use Illuminate\Support\Facades\Log;
 
 
 class SolicitudServicioController extends Controller
@@ -49,11 +50,39 @@ class SolicitudServicioController extends Controller
         return view('solicitudservicios.create', compact('sedes', 'residuos'));
     }
 
+    public function sedescliente(){
+        //$usuario = Auth::user()->Id_User;
+        $sedes = DB::table('sedes')
+            ->join('personas', 'personas.Id_Peronsa', '=', 'sedes.FK_Persona')
+            ->join('clientes', 'clientes.Id_Cliente', '=', 'personas.FK_PersCliente')
+            ->select('sedes.*')
+            //->where('FK_Persona', $usuario)
+            ->get();
+
+        return response()->json([
+            'sedes' => $sedes,
+        ]);
+    }
+
+    public function residuos(){
+
+        $residuos = DB::table('residuos')
+            ->select('*')
+            ->get();
+
+        return response()->json([
+            'residuos' => $residuos,
+        ]);
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        Log::info('Información recibida para creación de servicio:', $request->all());
+
         //return $request;
 
         $servicio = new Solser();
@@ -64,19 +93,17 @@ class SolicitudServicioController extends Controller
         $servicio->save();
 
         $this->createSolRes($request, $servicio->ID_SolSer);
-
-        return redirect()->route('solicitudservicios.index')->with('success', 'Residuo creado satisfactoriamente');
     }
 
     public function createSolRes($request, $solser){
 
         $solserresiduo =  new Solserrespel();
         $solserresiduo->FK_SolSer = $solser;
-        $solserresiduo->SolResKgEnviado = $request->respelkg;
+        $solserresiduo->SolResKgEnviado = $request->cantidad;
         $solserresiduo->SolResKgRecibido = 0;
         $solserresiduo->SolResEmbalaje = $request->embalaje;
         $solserresiduo->SolResSlug = hash('sha256', rand() . time() . $request->frecserv);
-        $solserresiduo->FK_Residuo = $request->residuoserv;
+        $solserresiduo->FK_Residuo = $request->id_residuo;
         $solserresiduo->DeleteSolRes = 0;
         $solserresiduo->save();
     }
