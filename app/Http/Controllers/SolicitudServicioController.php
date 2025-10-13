@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Solser;
 use App\Models\Solserrespel;
+use App\Models\Liquidacion;
 use Illuminate\Support\Facades\Log;
 
 
@@ -84,28 +85,122 @@ class SolicitudServicioController extends Controller
         Log::info('Información recibida para creación de servicio:', $request->all());
 
         //return $request;
+        $residuos = $request->input('residuos');
+
+        if (!$residuos || !is_array($residuos) || count($residuos) === 0) {
+            return response()->json(['error' => 'Debe enviar al menos un residuo'], 400);
+        }
+
+        $sede = $residuos[0]['sede'] ?? null;
+
+        $cantidad = 0;
+
+        foreach ($residuos as $residuo){
+            $cantidad = $cantidad + $residuo['cantidad'];
+        }
+
+        if (!$sede) {
+            return response()->json(['error' => 'No se ha especificado la sede'], 400);
+        }
 
         $servicio = new Solser();
         $servicio->NumFactura =  Null;
         $servicio->FechaSolicitud = now();
+        $servicio->FK_Sede = $sede;
+        $servicio->FK_Cliente = 1;
         $servicio->Estado = "aprobado";
         $servicio->Observaciones = "";
         $servicio->save();
 
-        $this->createSolRes($request, $servicio->ID_SolSer);
+        foreach ($residuos as $residuo) {
+            $this->createSolRes($residuo, $servicio->ID_SolSer);
+        }
+
+        $this->liquidacionservicio($cantidad, $servicio->ID_SolSer);
+
+        return response()->json([
+            'message' => 'Servicio creado correctamente',
+            'solicitud_id' => $servicio->ID_SolSer
+        ], 201);
     }
 
-    public function createSolRes($request, $solser){
+    public function createSolRes($residuo, $solser){
 
         $solserresiduo =  new Solserrespel();
         $solserresiduo->FK_SolSer = $solser;
-        $solserresiduo->SolResKgEnviado = $request->cantidad;
+        $solserresiduo->SolResKgEnviado = $residuo['cantidad'];
         $solserresiduo->SolResKgRecibido = 0;
-        $solserresiduo->SolResEmbalaje = $request->embalaje;
-        $solserresiduo->SolResSlug = hash('sha256', rand() . time() . $request->frecserv);
-        $solserresiduo->FK_Residuo = $request->id_residuo;
+        $solserresiduo->SolResEmbalaje = $residuo['embalaje'];
+        $solserresiduo->SolResSlug = hash('sha256', rand() . time() . $residuo['embalaje']);
+        $solserresiduo->FK_Residuo = $residuo['id_residuo'];
         $solserresiduo->DeleteSolRes = 0;
         $solserresiduo->save();
+    }
+
+    public function liquidacionservicio($cantidad, $solser){
+
+        $tarifa = DB::table('tarifas')
+            ->where('Categoria', 'like', $this->getCategoria($cantidad))
+            ->first();
+
+        $valor = $tarifa ? $tarifa->Costo : 0;
+
+        $liquidacion = new Liquidacion();
+        $liquidacion->FK_SolSer = $solser;
+        $liquidacion->TotalKg = $cantidad;
+        $liquidacion-> FK_Tarifas = $tarifa->ID_Tarifa;
+        $liquidacion->TotalKgAdicional = 0;
+        $liquidacion->TotalPagar = $valor;
+        $liquidacion->LiquiServSlug = hash('sha256', rand() . time() . $solser);
+        $liquidacion->FK_TipoPago = 1;
+        $liquidacion->DeleteLiquiServ = 0;
+        $liquidacion->save();
+
+    }
+
+    private function getCategoria($cantidad)
+    {
+        if ($cantidad >= 0 && $cantidad <= 12) {
+            return '0 a 12';
+        } elseif ($cantidad > 12 && $cantidad <= 20) {
+            return '12 A 20';
+        } elseif ($cantidad > 20 && $cantidad <= 40) {
+            return '20 a 40';
+        } elseif ($cantidad > 40 && $cantidad <= 60) {
+            return '40 a 60';
+        } elseif ($cantidad > 60 && $cantidad <= 100) {
+            return '60 a 100';
+        } elseif ($cantidad > 100 && $cantidad <= 150) {
+            return '100 a 150';
+        } else {
+            return 'Otro';
+        }
+    }
+
+    public function resumen(int $id){
+
+        Log::info('Información recibida para resumen de solicitud:'. $id);
+
+        $solicitud = DB::table('solicitudes_servicio')
+            ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
+            ->join('liquidacion_servicios', 'liquidacion_servicios.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
+            ->where('solicitudes_servicio.ID_SolSer', $id)
+            ->select('sedes.Direccion', 'liquidacion_servicios.TotalPagar')
+            ->get();
+
+        $residuos = DB::table('solicitud_residuos')
+            ->join('residuos', 'residuos.ID_Respel', '=', 'solicitud_residuos.FK_Residuo')
+            ->where('solicitud_residuos.FK_SolSer', $id)
+            ->select('residuos.RespelName', 'solicitud_residuos.SolResKgEnviado', 'solicitud_residuos.SolResEmbalaje')
+            ->get();
+
+        Log::info('Estos son los datos para resumen de solicitud:'. $solicitud . 'Y estos son los residuos:'. $residuos);
+
+        return response()->json([
+            'solicitud' => $solicitud,
+            'residuos' => $residuos,
+        ]);
+
     }
 
     /**

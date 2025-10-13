@@ -28,6 +28,7 @@ Route::post('/sede/updated/{id}', [sedesController::class, 'update']);
 Route::get('/servicios/sedes', [SolicitudServicioController::class, 'sedescliente']);
 Route::get('/servicios/residuos', [SolicitudServicioController::class, 'residuos']);
 Route::post('/servicios/create', [SolicitudServicioController::class, 'store']);
+Route::get('/servicios/resumen/{id}', [SolicitudServicioController::class, 'resumen']);
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);
