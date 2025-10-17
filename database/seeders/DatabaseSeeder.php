@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             TipoComercioSeeder::class,
             LocalidadesSeeder::class,
             TarifasSeeder::class,
+            VehiculosSeeder::class,
         ]);
     }
 }

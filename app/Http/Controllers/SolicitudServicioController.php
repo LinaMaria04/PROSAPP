@@ -117,6 +117,7 @@ class SolicitudServicioController extends Controller
         }
 
         $this->liquidacionservicio($cantidad, $servicio->ID_SolSer);
+        $this->programacion($cantidad, $servicio->ID_SolSer, $sede);
 
         return response()->json([
             'message' => 'Servicio creado correctamente',
@@ -194,13 +195,103 @@ class SolicitudServicioController extends Controller
             ->select('residuos.RespelName', 'solicitud_residuos.SolResKgEnviado', 'solicitud_residuos.SolResEmbalaje')
             ->get();
 
+        $programacion = DB::table('progamacion_vehiculos')->where('FK_Servicio', $id)->select('ProgVehFecha')->first();
+
         Log::info('Estos son los datos para resumen de solicitud:'. $solicitud . 'Y estos son los residuos:'. $residuos);
 
+        Log::info('Datos enviados al frontend:', [
+            'solicitud' => $solicitud,
+            'residuos' => $residuos,
+            'programacion' => $programacion->ProgVehFecha,
+        ]);
+        
         return response()->json([
             'solicitud' => $solicitud,
             'residuos' => $residuos,
+            'programacion' => $programacion->ProgVehFecha,
         ]);
+    }
 
+    public function programacion($cantidad, $SolSer, $sede){
+
+        /*$lunes = 'Usaquen', 'Suba', 'Engativa';
+        $martes = 'Fontibón', 'Kennedy', 'Bosa';
+        $miercoles = 'Chapinero', 'Barrios Unidos', 'Teusaquillo';
+        $jueves = 'Puente Aranda', 'Los Martires', 'Santa Fe', 'Candelaria';
+        $viernes = 'San Cristobal', 'Antonio Nariño', 'Rafael Uribe Uribe';
+        $sabado = 'Ciudad Bolivar', 'Usme', 'Tunjuelito';*/
+
+        $diasLocalidades = [
+            'Monday' => [20, 11, 10],
+            'Tuesday' => [9, 8, 7],
+            'Wednesday' => [2, 12, 13],
+            'Thursday' => [16, 14, 3, 17],
+            'Friday' => [4, 15, 18],
+            'Saturday' => [19, 5, 6],
+        ];
+
+        $localidad = DB::table('sedes')->select('SedeMapLocalidad')->where('Id_sede', $sede)->first();
+
+        $diaProgramado = 'No programado';
+
+        foreach ($diasLocalidades as $dia => $localidades) {
+            if (in_array($localidad->SedeMapLocalidad, $localidades)) {
+                $diaProgramado = $dia;
+                break;
+            }
+        }
+
+        $cantidad = $cantidad ?? 0;
+
+        // Día inicial de programación (por ejemplo 'Tuesday')
+        $diaActual = $diaProgramado;
+        $intentos = 0; // seguridad para evitar bucles infinitos
+
+        do {
+            $vehiculo = DB::table('vehiculos')
+                ->leftJoin('progamacion_vehiculos', function($join) use ($diaActual) {
+                    $join->on('vehiculos.ID_Vehiculo', '=', 'progamacion_vehiculos.FK_Vehiculo')
+                        ->where('progamacion_vehiculos.ProgVehDia', '=', $diaActual);
+                })
+                ->select(
+                    'vehiculos.ID_Vehiculo',
+                    'vehiculos.VehiCapacidad',
+                    DB::raw('COALESCE(SUM(progamacion_vehiculos.ProgVehKgAsignados), 0) as KgOcupados')
+                )
+                ->groupBy('vehiculos.ID_Vehiculo', 'vehiculos.VehiCapacidad')
+                ->havingRaw('vehiculos.VehiCapacidad - COALESCE(SUM(progamacion_vehiculos.ProgVehKgAsignados), 0) >= ?', [$cantidad])
+                ->orderBy('KgOcupados', 'asc')
+                ->first();
+
+            // Si encuentra vehículo disponible, lo asigna
+            if ($vehiculo) {
+                DB::table('progamacion_vehiculos')->insert([
+                    'FK_Vehiculo' => $vehiculo->ID_Vehiculo,
+                    'FK_Servicio' => $SolSer,
+                    'ProgVehDia' => $diaActual,
+                    'ProgVehKgAsignados' => $cantidad,
+                    'ProgVehFecha' => now()->next($diaActual)->toDateString(),
+                    'ProgVehDelete' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $mensaje = "Servicio programado para el día $diaActual con el vehículo #{$vehiculo->ID_Vehiculo}";
+                break;
+            }
+
+            // Si no hay vehículo, pasar al siguiente día
+            $diaActual = now()->next($diaActual)->addDay()->format('l'); // ejemplo: Tuesday -> Wednesday
+            $intentos++;
+
+        } while (!$vehiculo && $intentos < 7); // máximo 7 días adelante
+
+        // Si después de una semana no hay vehículo disponible
+        if (!$vehiculo) {
+            $mensaje = "No hay vehículos disponibles durante la próxima semana con capacidad suficiente.";
+        }
+
+        Log::info($mensaje);
     }
 
     /**
