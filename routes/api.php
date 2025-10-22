@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SedesController;
 use App\Http\Controllers\SolicitudServicioController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\PagosController;
+use App\Http\Controllers\WompiController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -29,6 +31,12 @@ Route::get('/servicios/sedes', [SolicitudServicioController::class, 'sedesclient
 Route::get('/servicios/residuos', [SolicitudServicioController::class, 'residuos']);
 Route::post('/servicios/create', [SolicitudServicioController::class, 'store']);
 Route::get('/servicios/resumen/{id}', [SolicitudServicioController::class, 'resumen']);
+Route::get('/servicios/pago/{id}', [SolicitudServicioController::class, 'generarPago']);
+
+//Rutas de Pagos
+Route::post('/wompi/create-payment-link', [WompiController::class, 'createPaymentLink']);
+Route::post('/wompi/webhook', [WompiController::class, 'webhook']);
+Route::get('/wompi/callback', [WompiController::class, 'callback'])->name('wompi.callback');
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);

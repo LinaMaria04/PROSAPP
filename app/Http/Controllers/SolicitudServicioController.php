@@ -370,7 +370,51 @@ class SolicitudServicioController extends Controller
             ]);
     }
 
-    /**
+    public function generarPago(int $id)
+    {
+        Log::info('=== Generar Pago Wompi ===');
+        Log::info('ID recibido: ' . $id);
+
+        $liquidacion = DB::table('liquidacion_servicios')
+            ->where('FK_SolSer', $id)
+            ->first();
+
+        if (!$liquidacion) {
+            return response()->json(['error' => 'Liquidación no encontrada'], 404);
+        }
+
+        $publicKey = env('WOMPI_PUBLIC_KEY');
+        $integritySecret = env('WOMPI_INTEGRITY_SECRET');
+
+        // Limpieza del valor y conversión a centavos
+        $valor = preg_replace('/[^\d.]/', '', $liquidacion->TotalPagar);
+        $amountInCents = (int) round(floatval($valor) * 100);
+        $currency = 'COP';
+        $reference = (string) $liquidacion->ID_LiquiServ;
+
+        // Generar firma exacta según documentación oficial
+        $cadena = $reference . $amountInCents . $currency . $integritySecret;
+        $signature = hash('sha256', $cadena);
+
+        $redirectUrl = "prosapp://pago-exitoso";
+
+        // Construir la URL correctamente
+        $query = http_build_query([
+            'public-key' => $publicKey,
+            'currency' => $currency,
+            'amount-in-cents' => $amountInCents,
+            'reference' => $reference,
+            //'redirect-url' => $redirectUrl,
+        ]);
+
+        $urlPago = "https://checkout.wompi.co/p/?{$query}&signature:integrity={$signature}";
+
+        Log::info('URL WOMPI FINAL: ' . $urlPago);
+
+        return response()->json(['url_pago' => $urlPago]);
+    }
+    
+    /*
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
