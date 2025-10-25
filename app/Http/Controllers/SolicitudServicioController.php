@@ -222,7 +222,7 @@ class SolicitudServicioController extends Controller
         $sabado = 'Ciudad Bolivar', 'Usme', 'Tunjuelito';*/
 
         $diasLocalidades = [
-            'Monday' => [20, 11, 10],
+            'Monday' => [1, 11, 10],
             'Tuesday' => [9, 8, 7],
             'Wednesday' => [2, 12, 13],
             'Thursday' => [16, 14, 3, 17],
