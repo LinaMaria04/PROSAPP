@@ -6,47 +6,39 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use App\Models\ProgramacionServicios;
 
-
 class ProgramarRutasConductores extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:programar-rutas-conductores';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Programación diaria de servicios';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $this->info('Iniciando programación automática de rutas diarias');
 
-        //$hoy = Carbon::today()->toDateString();
+        // Puedes cambiar esta fecha de prueba
+        //$hoy = '2025-10-27';
+        $hoy = Carbon::today()->toDateString();
 
-        $hoy = '2025-10-27';
-        $servicios = DB::table('progamacion_vehiculos')
-            ->join('solicitudes_servicio', 'solicitudes_servicio.ID_SolSer' , '=', 'progamacion_vehiculos.FK_Servicio')
+        $serviciosAgrupados = DB::table('progamacion_vehiculos')
+            ->join('solicitudes_servicio', 'solicitudes_servicio.ID_SolSer', '=', 'progamacion_vehiculos.FK_Servicio')
             ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
             ->whereDate('progamacion_vehiculos.ProgVehFecha', $hoy)
-            ->select('progamacion_vehiculos.FK_Vehiculo', 'solicitudes_servicio.ID_SolSer', 'sedes.Direccion', 'sedes.SedeMapLat', 'sedes.SedeMapLong')
+            ->select(
+                'progamacion_vehiculos.FK_Vehiculo',
+                'solicitudes_servicio.ID_SolSer as id',
+                'solicitudes_servicio.FK_Sede as sede_id',
+                'sedes.Direccion',
+                'sedes.SedeMapLat',
+                'sedes.SedeMapLong'
+            )
             ->orderBy('progamacion_vehiculos.FK_Vehiculo')
             ->get()
             ->groupBy('FK_Vehiculo');
 
-        foreach ($servicios as $vehiculoId => $listaServicios) {
+        foreach ($serviciosAgrupados as $vehiculoId => $listaServicios) {
             $puntos = $listaServicios->map(fn($s) => [
                 'lat' => $s->SedeMapLat,
                 'lng' => $s->SedeMapLong,
@@ -54,48 +46,45 @@ class ProgramarRutasConductores extends Command
 
             $ruta = $this->calcularRutaOptima($vehiculoId, $puntos);
 
-            Log::info("Ruta calculada para el vehículo {$vehiculoId}:", $ruta);
+            Log::info("Ruta calculada para el vehículo {$vehiculoId}", $ruta);
 
             $orden = $ruta['orden_optimo'];
             $segmentos = $ruta['distancia_total'];
 
-            foreach ($segmentos as $index => $segmento){
+            // 🔁 Recorremos el orden óptimo
+            foreach ($orden as $i => $indiceServicio) {
+                $servicio = $listaServicios[$indiceServicio];
+                $segmento = $segmentos[$i] ?? null;
+
                 ProgramacionServicios::create([
-                    'ProVehFecha' = $hoy;
-                    'ProgHoraAprox' = "";
-                    
-
-
-
-
-
-
-
-                    'FK_Vehiculo' => $vehiculoId,
-                    'FK_Servicio' => $servicios[$orden[$index]]['id'], // servicio ordenado
-                    'FK_SedeServicio' => $servicios[$orden[$index]]['sede_id'],
-                    'ProgVehFecha' => Carbon::today(),
-                    'ProgHoraAprox' => Carbon::now()->addMinutes($segmento['duration']['value'] / 60),
-                    'SedeMapLat' => $segmento['end_location']['lat'],
-                    'SedeMapLong' => $segmento['end_location']['lng'],
-                    'ProgServSlug' => Str::slug("vehiculo-$vehiculoId-servicio-" . $servicios[$orden[$index]]['id']),
-                    'Observacion' => 'Ruta generada automáticamente',
-                ])
-                
-
+                    'ProVehFecha'     => $hoy,
+                    'ProgHoraAprox'   => Carbon::now()->addMinutes(($segmento['duration']['value'] ?? 0) / 60),
+                    'FK_Vehiculo'     => $vehiculoId,
+                    'FK_Conductor'    => 1, // Puedes cambiar esto por el conductor real
+                    'FK_Servicio'     => $servicio->id,
+                    'FK_SedeServicio' => $servicio->sede_id,
+                    'SedeMapLat'      => $servicio->SedeMapLat,
+                    'SedeMapLong'     => $servicio->SedeMapLong,
+                    'ProgServSlug'    => null,
+                    'Observacion'     => 'Ruta generada automáticamente',
+                    'created_at'      => Carbon::now(),
+                    'updated_at'      => Carbon::now(),
+                    'DeletProgServ'   => 0,
+                    'Orden'           => $i + 1,
+                    'Distancia'       => $segmento['distance']['value'] ?? null,
+                    'Duracion'        => $segmento['duration']['value'] ?? null,
+                ]);
             }
-            
         }
     }
 
-    function calcularRutaOptima($vehiculoId, $puntos) {
+    private function calcularRutaOptima($vehiculoId, $puntos)
+    {
         $apiKey = env('GOOGLE_MAPS_API_KEY');
 
-        // Ejemplo: $puntos = [
-        //   ['lat' => 4.6486, 'lng' => -74.1089],
-        //   ['lat' => 4.6823, 'lng' => -74.0912],
-        //   ['lat' => 4.7553, 'lng' => -74.0442]
-        // ];
+        if (count($puntos) < 2) {
+            return ['orden_optimo' => [0], 'distancia_total' => [], 'mapa_url' => null];
+        }
 
         $origen = "{$puntos[0]['lat']},{$puntos[0]['lng']}";
         $destinos = collect($puntos)->skip(1)->map(fn($p) => "{$p['lat']},{$p['lng']}")->implode('|');
@@ -110,9 +99,9 @@ class ProgramarRutasConductores extends Command
         $data = $response->json();
 
         return [
-            'orden_optimo' => $data['routes'][0]['waypoint_order'] ?? [],
+            'orden_optimo'    => $data['routes'][0]['waypoint_order'] ?? [],
             'distancia_total' => $data['routes'][0]['legs'] ?? [],
-            'mapa_url' => $data['routes'][0]['overview_polyline']['points'] ?? null
+            'mapa_url'        => $data['routes'][0]['overview_polyline']['points'] ?? null,
         ];
     }
 }
