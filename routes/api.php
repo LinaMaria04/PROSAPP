@@ -8,6 +8,7 @@ use App\Http\Controllers\SolicitudServicioController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PagosController;
 use App\Http\Controllers\WompiController;
+use App\Http\Controllers\ProgramacionServiciosController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -37,6 +38,10 @@ Route::get('/servicios/pago/{id}', [SolicitudServicioController::class, 'generar
 Route::post('/wompi/create-payment-link', [WompiController::class, 'createPaymentLink']);
 Route::post('/wompi/webhook', [WompiController::class, 'webhook']);
 Route::get('/wompi/callback', [WompiController::class, 'callback'])->name('wompi.callback');
+
+//Ruta de servicios - Conductores
+Route::get('/servicios/programacion/{id}', [ProgramacionServiciosController::class, 'programacionservicios']);
+
 
 Route::get('/ping', function () {
     return response()->json(['message' => 'API activa']);
