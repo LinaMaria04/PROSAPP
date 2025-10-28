@@ -41,6 +41,7 @@ Route::get('/wompi/callback', [WompiController::class, 'callback'])->name('wompi
 
 //Ruta de servicios - Conductores
 Route::get('/servicios/programacion/{id}', [ProgramacionServiciosController::class, 'programacionservicios']);
+Route::get('/servicios/detalles/{id}', [ProgramacionServiciosController::class, 'detallesolicitud']);
 
 
 Route::get('/ping', function () {

@@ -33,6 +33,36 @@ class ProgramacionServiciosController extends Controller
         Log::info('Esta es la lista de servicios: ' . json_encode($programacion));
     }
 
+    public function detallesolicitud(int $id){
+        Log::info('Este es el Id del la solicitud: '. $id);
+
+        $solicitud = DB::table('solicitudes_servicio')
+            ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
+            ->join('liquidacion_servicios', 'liquidacion_servicios.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
+            ->where('solicitudes_servicio.ID_SolSer', $id)
+            ->select('sedes.Direccion', 'liquidacion_servicios.TotalPagar', 'solicitudes_servicio.ID_SolSer')
+            ->get();
+
+        $residuos = DB::table('solicitud_residuos')
+            ->join('residuos', 'residuos.ID_Respel', '=', 'solicitud_residuos.FK_Residuo')
+            ->where('solicitud_residuos.FK_SolSer', $id)
+            ->select('residuos.RespelName', 'solicitud_residuos.SolResKgEnviado', 'solicitud_residuos.SolResEmbalaje')
+            ->get();
+
+        Log::info('Estos son los datos para resumen de solicitud:'. $solicitud . 'Y estos son los residuos:'. $residuos);
+
+        Log::info('Datos enviados al frontend:', [
+            'solicitud' => $solicitud,
+            'residuos' => $residuos,
+        ]);
+        
+        return response()->json([
+            'solicitud' => $solicitud->first(),
+            'residuos' => $residuos->toArray(),
+        ]);
+
+    }
+
     /**
      * Display a listing of the resource.
      */
