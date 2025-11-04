@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProgramacionServicios;
+use App\Models\Solserrespel;
 use Illuminate\Support\Facades\Log;
 
 
@@ -61,6 +62,32 @@ class ProgramacionServiciosController extends Controller
             'residuos' => $residuos->toArray(),
         ]);
 
+    }
+
+    public function anadirresiduo(Request $request, int $id){
+
+        Log::info('Este es el Id de la solicitud para añadir residuo: '. $id);
+        Log::info('Datos recibidos para añadir residuo: ', $request->all());
+
+        $solicitudresiduo = DB::table('solicitud_residuos')
+            ->where('FK_SolSer', $id)
+            ->first();
+
+        $residuo = DB::table('residuos')
+            ->where('RespelName', $request['residuo'])
+            ->first();
+
+        Log::info('Este es el ID del residuo: '. $residuo->ID_Respel);    
+
+        $solserresiduo =  new Solserrespel();
+        $solserresiduo->FK_SolSer = $id;
+        $solserresiduo->SolResKgEnviado = $request['cantidad'];
+        $solserresiduo->SolResKgRecibido = $request['cantidad'];
+        $solserresiduo->SolResEmbalaje = $request['embalaje'];
+        $solserresiduo->SolResSlug = hash('sha256', rand() . time() . $request['embalaje']);
+        $solserresiduo->FK_Residuo = $residuo->ID_Respel;
+        $solserresiduo->DeleteSolRes = 0;
+        $solserresiduo->save();
     }
 
     /**

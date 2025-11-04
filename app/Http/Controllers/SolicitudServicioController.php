@@ -71,9 +71,14 @@ class SolicitudServicioController extends Controller
             ->select('*')
             ->get();
 
+        Log::info('Datos enviados al frontend:', [
+                'residuos' => $residuos,
+            ]);
+
         return response()->json([
             'residuos' => $residuos,
         ]);
+
     }
 
 
