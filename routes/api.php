@@ -43,6 +43,7 @@ Route::get('/wompi/callback', [WompiController::class, 'callback'])->name('wompi
 Route::get('/servicios/programacion/{id}', [ProgramacionServiciosController::class, 'programacionservicios']);
 Route::get('/servicios/detalles/{id}', [ProgramacionServiciosController::class, 'detallesolicitud']);
 Route::post('/servicios/anadirResiduo/{id}', [ProgramacionServiciosController::class, 'anadirresiduo']);
+Route::post('/servicios/guardarFirma', [ProgramacionServiciosController::class, 'conciliar']);
 
 
 Route::get('/ping', function () {
