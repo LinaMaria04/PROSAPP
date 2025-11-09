@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\ProgramacionServicios;
+use App\Models\Solser;
 
 class ProgramarRutasConductores extends Command
 {
@@ -74,6 +75,11 @@ class ProgramarRutasConductores extends Command
                     'Distancia'       => $segmento['distance']['value'] ?? null,
                     'Duracion'        => $segmento['duration']['value'] ?? null,
                 ]);
+
+                Solser::where('ID_SolSer', $servicio->id)
+                    ->update(['Estado' => 'Programado']);
+
+
             }
         }
     }

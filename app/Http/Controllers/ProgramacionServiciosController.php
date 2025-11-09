@@ -33,6 +33,7 @@ class ProgramacionServiciosController extends Controller
             ->join('clientes', 'clientes.Id_Cliente', '=', 'solicitudes_servicio.FK_Cliente')
             ->where('programacion_servicios.FK_Conductor', $id)
             ->where('programacion_servicios.ProVehFecha', '2025-10-27')
+            ->where('solicitudes_servicio.Estado', 'Programado' )
             ->select('programacion_servicios.ProVehFecha', 'programacion_servicios.FK_Servicio', 'sedes.NombreSede', 'sedes.Direccion', 'clientes.razon_social', 'programacion_servicios.Orden', 'programacion_servicios.Distancia', 'programacion_servicios.Duracion')
             ->get();
 
