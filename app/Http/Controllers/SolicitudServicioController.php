@@ -199,7 +199,7 @@ class SolicitudServicioController extends Controller
             ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
             ->join('liquidacion_servicios', 'liquidacion_servicios.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
             ->where('solicitudes_servicio.ID_SolSer', $id)
-            ->select('sedes.Direccion', 'liquidacion_servicios.TotalPagar')
+            ->select('sedes.Direccion', 'liquidacion_servicios.TotalPagar', 'sedes.SedeMapLat as Latitud', 'sedes.SedeMapLong as Longitud')
             ->get();
 
         $residuos = DB::table('solicitud_residuos')
