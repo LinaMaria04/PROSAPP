@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PagosController;
 use App\Http\Controllers\WompiController;
 use App\Http\Controllers\ProgramacionServiciosController;
+use App\Http\Controllers\UsersController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -44,6 +45,9 @@ Route::get('/servicios/programacion/{id}', [ProgramacionServiciosController::cla
 Route::get('/servicios/detalles/{id}', [ProgramacionServiciosController::class, 'detallesolicitud']);
 Route::post('/servicios/anadirResiduo/{id}', [ProgramacionServiciosController::class, 'anadirresiduo']);
 Route::post('/servicios/guardarFirma', [ProgramacionServiciosController::class, 'conciliar']);
+
+//Rutas de usuarios
+Route::post('/usuarios/create', [UsersController::class, 'createuser']);
 
 
 Route::get('/ping', function () {

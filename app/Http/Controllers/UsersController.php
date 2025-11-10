@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Personas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Permisos;
+use Illuminate\Support\Facades\Log;
 
 class UsersController extends Controller
 {
@@ -161,5 +163,35 @@ class UsersController extends Controller
         $user->save();
 
         return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente');
+    }
+
+    public function createuser(Request $request)
+    {
+        Log::info('Información recibida para creación de usuario:', $request->all());
+
+
+        $persona = new Personas();
+        $persona->PrimerNombre = $request->nombres;
+        $persona->Apellidos = $request->apellidos;
+        $persona->PersDocType = $request->tipo_documento;
+        $persona->PersDocNumber = $request->numero_documento;
+        $persona->Telefono = $request->telefono;
+        $persona->FK_PersCliente = 1;
+        $persona->PersSlug = hash('sha256', rand().time().$request->apellidos);
+        $persona->DeletePersona = 0;
+        $persona->save();
+        
+        $user = new User();
+        $user->Nombre = $request->nombres . ' ' . $request->apellidos;
+        $user->email = $request->correo;
+        $user->password = Hash::make('12345678');
+        $user->UsRol = 'cliente';
+        $user->UserSlug = hash('sha256', rand().time().$request->apellidos);
+        $user->FK_UserPersona = $persona->Id_Peronsa;
+        $user->is_active = 1;
+        $user->DeleteUser = 0;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario creado correctamente'], 201);
     }
 }
