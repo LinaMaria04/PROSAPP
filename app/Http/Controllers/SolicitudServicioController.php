@@ -19,14 +19,22 @@ class SolicitudServicioController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+        //$user = auth()->user();
 
         $servicios = DB::table('solicitudes_servicio')
             ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
-            ->select('*')
+            ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
+            ->select('solicitudes_servicio.FechaSolicitud as fecha', 'solicitudes_servicio.ID_SolSer as numero', 'sedes.Direccion as direccion', 'sedes.NombreSede as ubicacion', 'solicitudes_servicio.Estado as estado')
+            ->orderby('solicitudes_servicio.ID_SolSer', 'desc')
             ->get();
 
-            return view('solicitudservicios.index', compact('servicios'));
+        Log::info('Datos enviados al frontend:', [
+                'solicitudes' => $servicios->values(),
+            ]);
+
+        return response()->json([
+            'solicitudes' => $servicios->values(),
+        ]);
     }
 
     /**
