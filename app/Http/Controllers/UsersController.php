@@ -212,7 +212,6 @@ class UsersController extends Controller
 
         $empresa = db::table('clientes')
             ->where('ClientDocumento', $request->numero_documento)
-            ->where('DeleteCliente', 0)
             ->first();
 
         if($empresa){
@@ -256,6 +255,9 @@ class UsersController extends Controller
         $user->is_active = 1;
         $user->DeleteUser = 0;
         $user->save();
+
+        $cliente->FK_ClienteUser = $user->Id_User;
+        $cliente->save();
 
         return response()->json(['message' => 'Usuario registrado correctamente'], 200);
     }

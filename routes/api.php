@@ -10,6 +10,8 @@ use App\Http\Controllers\PagosController;
 use App\Http\Controllers\WompiController;
 use App\Http\Controllers\ProgramacionServiciosController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ClientesController;
+
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -24,7 +26,7 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 //Rutas de SEDES
 Route::get('/sedespersonas', [SedesController::class, 'personas']);
 Route::post('/sedes/create', [SedesController::class, 'store']);
-Route::get('/empresasedes', [sedesController::class, 'index']);
+Route::get('/empresasedes/{id}', [sedesController::class, 'index']);
 Route::get('/sede/edit/{id}', [sedesController::class, 'edit']);
 Route::post('/sede/updated/{id}', [sedesController::class, 'update']);
 
@@ -52,6 +54,10 @@ Route::post('/usuarios/create', [UsersController::class, 'createuser']);
 Route::post('/users/registro', [UsersController::class, 'registroUsuario']);
 Route::post('/users/confirmarcorreo', [UsersController::class, 'confirmarcorreo']);
 Route::post('/users/actualizarpassword', [UsersController::class, 'actualizarpassword']);
+
+//Rutas de Clientes
+Route::get('/cliente/editar/{id}', [ClientesController::class, 'edit']);
+Route::post('/cliente/update/{id}', [ClientesController::class, 'update']);
 
 
 Route::get('/ping', function () {

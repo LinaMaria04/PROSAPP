@@ -12,21 +12,38 @@ class SedesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(int $id)
     {
-    Log::info('Si esta entrando a index sedes');
+    Log::info('Si esta entrando a index sedes ' . $id);
+
+        $user = DB::table('users')
+            ->join('personas', 'personas.Id_Peronsa', '=', 'users.FK_UserPersona')
+            ->where('users.Id_User', $id)
+            ->select('personas.Id_Peronsa', 'users.Id_User')
+            ->first();
+
+        log::info('Usuario autenticado: ' . json_encode($user));
+
         $sedes = DB::table('sedes')
             ->join('personas', 'personas.Id_Peronsa', '=', 'sedes.FK_Persona')
             ->join('clientes', 'clientes.Id_Cliente', '=', 'personas.FK_PersCliente')
             ->where('DeleteSedes', 0)
-            //->where('clientes.FK_ClienteUser', $user->Id_User)
+            ->where('sedes.FK_Persona', $user->Id_Peronsa)
             ->orderBy('Id_Sede', 'asc')
             ->get();
 
+        $cliente = DB::table('clientes')
+            ->where('FK_ClienteUser', $user->Id_User)
+            ->select('ClientDocType', 'ClientDocumento', 'razon_social', 'CorreoFE', 'telefono')
+            ->first();
+
         Log::info('Estos son los resultados: ' . $sedes);
+        
+        Log::info('Este es el cliente: ' . json_encode($cliente));
 
         return response()->json([
             'sedes' => $sedes,
+            'cliente' => $cliente,
         ]);
         
     }

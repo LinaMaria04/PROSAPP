@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Permisos;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -132,6 +133,17 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $credentials['email'])->first();
+        $cliente = db::table('clientes')->where('FK_ClienteUser', $user->Id_User)->first();
+        $personas = db::table('personas')->where('FK_PersCliente', $cliente->Id_Cliente)->first();
+
+        if(!$personas){
+            Log::info('Perfil incompleto para: ' . $request->email);
+            return response()->json([
+                'message' => 'Por favor completa tu perfil antes de iniciar sesión.',
+                'user_id' => $user->Id_User,
+                'cliente' => $cliente->razon_social,
+            ], 402);
+        }
 
         if (!$user) {
             Log::info('Usuario no encontrado: ' . $request->email);
@@ -165,13 +177,8 @@ class AuthController extends Controller
         Log::info('Inicio de sesión exitoso para: ' . $request->email);
         return response()->json([
             'message' => 'Login exitoso',
-            'usuario' => [
-                'id' => $user->id,
-                'nombre' => $user->name ?? '',
-                'email' => $user->email,
-                'rol' => $user->UsRol,
-                'perfil_completo' => $user->UsRol === 'cliente' ? !is_null($user->FK_UserPersona) : true,
-            ],
+            'user_id' => $user->Id_User,
+            'cliente' => $cliente->razon_social,
         ], 200);
     }
 
