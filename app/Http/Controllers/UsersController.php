@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Personas;
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -193,5 +194,67 @@ class UsersController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Usuario creado correctamente'], 201);
+    }
+
+    public function registroUsuario(Request $request)
+    {
+        Log::info('Información recibida para registro de usuario:', $request->all());
+
+        $correo = db::table('users')
+            ->where('email', $request->email)
+            ->where('DeleteUser', 0)
+            ->first();
+
+        if ($correo) {
+            return response()->json(['message' => 'El correo ya está registrado'], 400);
+        }
+
+        $empresa = db::table('clientes')
+            ->where('ClientDocumento', $request->numero_documento)
+            ->where('DeleteCliente', 0)
+            ->first();
+
+        if($empresa){
+            return response()->json(['message' => 'El número de documento ya está registrado'], 401);
+        }
+
+        $cliente = new Cliente();
+        $cliente->ClientDocType = $request->tipo_documento;
+        $cliente->ClientDocumento = $request->numero_documento;
+        $cliente->razon_social = $request->razon_social;
+        $cliente->direccion = $request->direccion;
+        $cliente->telefono = $request->telefono;
+        $cliente->FK_TipoComercio  = 1;
+        $cliente->ClientSlug = hash('sha256', rand().time().$request->razon_social);
+        $cliente->ClientRut = '';
+        $cliente->CorreoFE = $request->email;
+        $cliente->ClientStatus = 'activo';
+        $cliente->TipoFacturacion = 'electronica';
+        $cliente->FK_ClienteUser = null;
+        $cliente->save();
+
+        /*$persona = new Personas();
+        $persona->PrimerNombre = $request->nombres;
+        $persona->Apellidos = $request->apellidos;
+        $persona->PersDocType = $request->tipo_documento;
+        $persona->PersDocNumber = $request->numero_documento;
+        $persona->Telefono = $request->telefono;
+        $persona->FK_PersCliente = 1;
+        $persona->PersSlug = hash('sha256', rand().time().$request->apellidos);
+        $persona->DeletePersona = 0;
+        $persona->save();*/
+        
+        $user = new User();
+        $user->Nombre = $request->razon_social;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->UsRol = 'cliente';
+        $user->UserSlug = hash('sha256', rand().time().$request->razon_social);
+        $user->FK_UserPersona = null;
+        $user->is_active = 1;
+        $user->DeleteUser = 0;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario registrado correctamente'], 200);
     }
 }
