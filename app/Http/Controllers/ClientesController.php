@@ -85,6 +85,38 @@ class ClientesController extends Controller
         
     }
 
+    public function estadisticas(string $id)
+    {
+        Log::info('Obteniendo estadisticas para el cliente: ' . $id);
+
+        $totalServicios = DB::table('solicitudes_servicio')
+            ->join('clientes','clientes.Id_Cliente', '=', 'solicitudes_servicio.FK_Cliente')
+            ->where('razon_social', $id)
+            ->select('solicitudes_servicio.*')
+            ->count();
+
+        $totalCertificados = DB::table('certificados')
+            ->join('clientes','clientes.Id_Cliente', '=', 'certificados.FK_CertCliente')
+            ->where('razon_social', $id)
+            ->select('certificados.*')
+            ->count();
+
+        $totalPagos = DB::table('liquidacion_servicios')
+            ->join('solicitudes_servicio','solicitudes_servicio.ID_SolSer', '=', 'liquidacion_servicios.FK_SolSer')
+            ->join('clientes','clientes.Id_Cliente', '=', 'solicitudes_servicio.FK_Cliente')
+            ->where('razon_social', $id)
+            ->select('liquidacion_servicios.*')
+            ->count();
+
+        Log::info('Estadisticas obtenidas para el cliente: ' . $id);
+
+        return response()->json([
+            'total_servicios' => $totalServicios,
+            'servicios_certificados' => $totalCertificados,
+            'servicios_pagos' => $totalPagos,
+        ]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
