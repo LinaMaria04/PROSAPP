@@ -50,6 +50,8 @@ Route::post('/servicios/guardarFirma', [ProgramacionServiciosController::class, 
 //Rutas de usuarios
 Route::post('/usuarios/create', [UsersController::class, 'createuser']);
 Route::post('/users/registro', [UsersController::class, 'registroUsuario']);
+Route::post('/users/confirmarcorreo', [UsersController::class, 'confirmarcorreo']);
+Route::post('/users/actualizarpassword', [UsersController::class, 'actualizarpassword']);
 
 
 Route::get('/ping', function () {

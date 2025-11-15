@@ -189,6 +189,7 @@ class UsersController extends Controller
         $user->UsRol = 'cliente';
         $user->UserSlug = hash('sha256', rand().time().$request->apellidos);
         $user->FK_UserPersona = $persona->Id_Peronsa;
+        $user->email_verified_at = now();
         $user->is_active = 1;
         $user->DeleteUser = 0;
         $user->save();
@@ -247,6 +248,7 @@ class UsersController extends Controller
         $user = new User();
         $user->Nombre = $request->razon_social;
         $user->email = $request->email;
+        $user->email_verified_at = now();
         $user->password = Hash::make($request->password);
         $user->UsRol = 'cliente';
         $user->UserSlug = hash('sha256', rand().time().$request->razon_social);
@@ -256,5 +258,41 @@ class UsersController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Usuario registrado correctamente'], 200);
+    }
+
+    public function confirmarcorreo(Request $request)
+    {
+        Log::info('Información recibida para confirmar correo:', $request->all());
+
+        $correo = db::table('users')
+            ->where('email', $request->correo)
+            ->where('DeleteUser', 0)
+            ->first();
+
+        if ($correo) {
+            return response()->json(['message' => 'El correo ya está registrado'], 200);
+        } else {
+            return response()->json(['message' => 'El correo no está registrado'], 400);
+        }
+    }
+
+    public function actualizarpassword(Request $request)
+    {
+        Log::info('Información recibida para actualizar contraseña:', $request->all());
+
+        $user = db::table('users')
+            ->where('email', $request->correo)
+            ->where('DeleteUser', 0)
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'El correo no está registrado'], 400);
+        }
+
+        db::table('users')
+            ->where('Id_User', $user->Id_User)
+            ->update(['password' => Hash::make($request->contaseña)]);
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente'], 200);
     }
 }
