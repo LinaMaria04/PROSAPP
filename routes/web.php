@@ -70,7 +70,7 @@ Route::middleware('guest')->group(function () {
 // Rutas que requieren autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas para usuarios autenticados (verificación de permisos en controladores)
-    Route::get('/usuarios-prosarc/crear', [UsersController::class, 'createProsarc'])->name('usuarios-prosarc.create');
+   /* Route::get('/usuarios-prosarc/crear', [UsersController::class, 'createProsarc'])->name('usuarios-prosarc.create');
     Route::post('/usuarios-prosarc', [UsersController::class, 'index'])->name('users.index');
     Route::resource('users', UsersController::class);
     Route::resource('roles', RolesController::class);
@@ -99,6 +99,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Facturación electrónica
     Route::get('/facturacion', [FacturacionController::class, 'show'])->name('facturacion.show');
     Route::get('/facturacion/edit', [FacturacionController::class, 'edit'])->name('facturacion.edit');
-    Route::put('/facturacion/update', [FacturacionController::class, 'update'])->name('facturacion.update');
+    Route::put('/facturacion/update', [FacturacionController::class, 'update'])->name('facturacion.update');*/
 
 });
