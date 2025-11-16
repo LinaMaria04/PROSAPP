@@ -42,11 +42,11 @@ Route::resource('solservicios',SolicitudServicioController::class);
 Route::middleware('guest')->group(function () {
     // Rutas de login
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    //Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     // Rutas de registro
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
+    //Route::post('/register', [AuthController::class, 'register'])->name('register');
 
     // Rutas de verificación de email
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
@@ -59,8 +59,8 @@ Route::middleware('guest')->group(function () {
     // Rutas de recuperación de contraseña
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
         ->name('password.request');
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
-        ->name('password.email');
+   // Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+      //  ->name('password.email');
     Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
         ->name('password.reset');
     Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
