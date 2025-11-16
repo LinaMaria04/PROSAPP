@@ -18,7 +18,7 @@
   "devDependencies": {
     "laravel-vite-plugin": "^1.2.0",
     "rollup": "^4.53.2",
-    "vite": "^6.3.2"
+    "vite": "^6.4.1"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
