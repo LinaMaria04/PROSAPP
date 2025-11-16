@@ -1,16 +1,10 @@
-# nixpacks.toml
+[phases.setup]
+aptPkgs = ["php-gd", "libzip-dev", "unzip", "git"]
 
-# Sobreescribe el paso de instalación para usar `npm install` en lugar de `npm ci`.
 [phases.install]
-cmds = [
-    "mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx",
-    "composer install --ignore-platform-reqs",
-    "npm install"
+commands = [
+  "composer install --ignore-platform-reqs --no-interaction"
 ]
 
-# ESTO ES LO NUEVO: Deshabilita el caching para esta fase
-[phases.install.cache]
-# Define los directorios que se excluirán de la caché.
-# Al dejarlo vacío, se desactiva el caching para la fase 'install',
-# forzando que npm install se ejecute completamente.
-paths = []
+[start]
+cmd = "vendor/bin/heroku-php-apache2 public/"
