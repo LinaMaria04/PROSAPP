@@ -1,5 +1,14 @@
+[phases.setup]
+nixPkgs = ["php", "php82Extensions.curl", "php82Extensions.fileinfo", "php82Extensions.mbstring", "php82Extensions.openssl", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.tokenizer", "php82Extensions.xml", "php82Extensions.gd", "php82Extensions.zip", "nodejs_18", "npm-9_x"]
+
 [phases.install]
-cmds = ["npm install"]
+cmds = [
+  "composer install --ignore-platform-reqs --no-interaction --prefer-dist",
+  "npm install"
+]
 
 [phases.build]
 cmds = ["npm run build"]
+
+[start]
+cmd = "vendor/bin/heroku-php-apache2 public/"
