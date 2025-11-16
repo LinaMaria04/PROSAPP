@@ -117,6 +117,37 @@ class ClientesController extends Controller
         ]);
     }
 
+    public function createPerson(Request $request, int $id, string $cliente){
+
+        Log::info('Esta es la información recibida para crear persona: ' . $request . ' User id: ' . $id . 'Nombre del cliente: ' . $cliente);
+
+        $cliente = DB::table('clientes')
+            ->where('razon_social', $cliente)
+            ->select('Id_Cliente')
+            ->first();
+
+        Log::info('Este es el cliente: ' . json_encode($cliente));
+
+        $persona = new Personal();
+        $persona->PersDocType = $request->tipoDoc;
+        $persona->PersDocNumber = $request->numerodoc;
+        $persona->PrimerNombre = $request->primer_nombre;
+        $persona->SegundoNombre = $request->segundo_nombre;
+        $persona->Apellidos = $request->apellidos;
+        $persona->Telefono = $request->telefono;
+        $persona->FK_PersCliente = $cliente->Id_Cliente;
+        $persona->PersSlug = hash('sha256', rand() . time() . $request->telefono);
+        $persona->created_at = now();
+        $persona->updated_at = now();
+        $persona->DeletePersona = 0;
+        $persona->save();
+
+        return response()->json([
+            'message' => 'Persona creada con exito'
+        ]);
+
+    }
+
     /**
      * Remove the specified resource from storage.
      */

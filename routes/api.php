@@ -61,6 +61,7 @@ Route::post('/users/actualizarpassword', [UsersController::class, 'actualizarpas
 Route::get('/cliente/editar/{id}', [ClientesController::class, 'edit']);
 Route::post('/cliente/update/{id}', [ClientesController::class, 'update']);
 Route::get('/cliente/estadisticas/{id}', [ClientesController::class, 'estadisticas']);
+Route::post('/cliente/personacreate/{id}/{clientname}', [ClientesController::class, 'createPerson']);
 
 
 Route::get('/ping', function () {
