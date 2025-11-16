@@ -28,7 +28,6 @@ class SolicitudServicioController extends Controller
             $servicios = DB::table('solicitudes_servicio')
                 ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
                 ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
-                // 👈 CORRECCIÓN AQUÍ: Usar la FK del cliente en la tabla solicitudes_servicio
                 ->where('solicitudes_servicio.FK_Cliente', $user->FK_ClienteUser) 
                 ->select('solicitudes_servicio.FechaSolicitud as fecha', 'solicitudes_servicio.ID_SolSer as numero', 'sedes.Direccion as direccion', 'sedes.NombreSede as ubicacion', 'solicitudes_servicio.Estado as estado')
                 ->orderby('solicitudes_servicio.ID_SolSer', 'desc')
@@ -50,6 +49,51 @@ class SolicitudServicioController extends Controller
 
         return response()->json([
             'solicitudes' => $servicios->values(),
+        ]);
+    }
+
+    public function certificados(int $id)
+    {
+        log::info('=== Obtener Certificados de Servicio === ' . $id);
+
+        $certificados = DB::table('certificados')
+            ->join('clientes', 'clientes.Id_Cliente', '=', 'certificados.FK_CertCliente')
+            ->join('users', 'users.id_User', '=', 'clientes.FK_ClienteUser')
+            ->where('Id_Cliente', $id)
+            ->get();
+
+        Log::info('Datos enviados al frontend:', [
+                'certificados' => $certificados,
+            ]);
+
+        return response()->json([
+            'certificados' => $certificados,
+        ]);
+
+    }
+
+    public function viewcertificado(int $id)
+    {
+        log::info('=== Ver Certificado === ' . $id);
+
+        $certificado = DB::table('certificados')
+            ->join('sedes', 'sedes.Id_Sede', '=', 'certificados.FK_CertGenerSede')
+            ->where('certificados.ID_Cert', $id)
+            ->select('certificados.ID_Cert', 'sedes.Direccion')
+            ->first();
+
+        $residuos = DB::table('certificados')
+            ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'certificados.FK_CertSolser')
+            ->join('residuos', 'residuos.ID_Respel', '=', 'solicitud_residuos.FK_Residuo')
+            ->where('certificados.ID_Cert', $id)
+            ->select('residuos.RespelName', 'solicitud_residuos.SolResKgEnviado', 'solicitud_residuos.SolResEmbalaje')
+            ->get();    
+
+        Log::info('Certificado encontrado: ' . json_encode($certificado) . ' residuos: ' . json_encode($residuos));
+
+        return response()->json([
+            'certificado' => $certificado,
+            'residuos' => $residuos,
         ]);
     }
 

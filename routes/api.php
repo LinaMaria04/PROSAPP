@@ -37,6 +37,8 @@ Route::post('/servicios/create', [SolicitudServicioController::class, 'store']);
 Route::get('/servicios/resumen/{id}', [SolicitudServicioController::class, 'resumen']);
 Route::get('/servicios/pago/{id}', [SolicitudServicioController::class, 'generarPago']);
 Route::get('/servicios/index/{id}', [SolicitudServicioController::class, 'index']);
+Route::get('/servicios/certificados/{id}', [SolicitudServicioController::class, 'certificados']);
+Route::get('/servicios/certificados/view/{id}', [SolicitudServicioController::class, 'viewcertificado']);
 
 //Rutas de Pagos
 Route::post('/wompi/create-payment-link', [WompiController::class, 'createPaymentLink']);
