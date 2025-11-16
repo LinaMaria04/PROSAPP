@@ -31,12 +31,12 @@ Route::get('/sede/edit/{id}', [sedesController::class, 'edit']);
 Route::post('/sede/updated/{id}', [sedesController::class, 'update']);
 
 //Rutas de Servicios
-Route::get('/servicios/sedes', [SolicitudServicioController::class, 'sedescliente']);
+Route::get('/servicios/sedes/{id}', [SolicitudServicioController::class, 'sedescliente']);
 Route::get('/servicios/residuos', [SolicitudServicioController::class, 'residuos']);
 Route::post('/servicios/create', [SolicitudServicioController::class, 'store']);
 Route::get('/servicios/resumen/{id}', [SolicitudServicioController::class, 'resumen']);
 Route::get('/servicios/pago/{id}', [SolicitudServicioController::class, 'generarPago']);
-Route::get('/servicios/index', [SolicitudServicioController::class, 'index']);
+Route::get('/servicios/index/{id}', [SolicitudServicioController::class, 'index']);
 
 //Rutas de Pagos
 Route::post('/wompi/create-payment-link', [WompiController::class, 'createPaymentLink']);

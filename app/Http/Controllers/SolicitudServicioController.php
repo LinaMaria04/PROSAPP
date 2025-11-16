@@ -17,16 +17,32 @@ class SolicitudServicioController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(int $id)
     {
-        //$user = auth()->user();
+        $user = db::table('users')
+            ->join('clientes', 'clientes.FK_ClienteUser', '=', 'users.id_User')
+            ->where('Id_User', $id)
+            ->first();
 
-        $servicios = DB::table('solicitudes_servicio')
-            ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
-            ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
-            ->select('solicitudes_servicio.FechaSolicitud as fecha', 'solicitudes_servicio.ID_SolSer as numero', 'sedes.Direccion as direccion', 'sedes.NombreSede as ubicacion', 'solicitudes_servicio.Estado as estado')
-            ->orderby('solicitudes_servicio.ID_SolSer', 'desc')
-            ->get();
+        if($user->UsRol == 'cliente'){
+            $servicios = DB::table('solicitudes_servicio')
+                ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
+                ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
+                // 👈 CORRECCIÓN AQUÍ: Usar la FK del cliente en la tabla solicitudes_servicio
+                ->where('solicitudes_servicio.FK_Cliente', $user->FK_ClienteUser) 
+                ->select('solicitudes_servicio.FechaSolicitud as fecha', 'solicitudes_servicio.ID_SolSer as numero', 'sedes.Direccion as direccion', 'sedes.NombreSede as ubicacion', 'solicitudes_servicio.Estado as estado')
+                ->orderby('solicitudes_servicio.ID_SolSer', 'desc')
+                ->get();
+        } else {
+
+            $servicios = DB::table('solicitudes_servicio')
+                ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'solicitudes_servicio.ID_SolSer')
+                ->join('sedes', 'sedes.Id_Sede', '=', 'solicitudes_servicio.FK_Sede')
+                ->select('solicitudes_servicio.FechaSolicitud as fecha', 'solicitudes_servicio.ID_SolSer as numero', 'sedes.Direccion as direccion', 'sedes.NombreSede as ubicacion', 'solicitudes_servicio.Estado as estado')
+                ->orderby('solicitudes_servicio.ID_SolSer', 'desc')
+                ->get();
+
+        }
 
         Log::info('Datos enviados al frontend:', [
                 'solicitudes' => $servicios->values(),
@@ -59,15 +75,32 @@ class SolicitudServicioController extends Controller
         return view('solicitudservicios.create', compact('sedes', 'residuos'));
     }
 
-    public function sedescliente(){
+    public function sedescliente(int $id){
         //$usuario = Auth::user()->Id_User;
+
+        Log::info('ID de usuario recibido para sedes: ' . $id);
+
+        $user = DB::table('users')
+            ->join('clientes', 'clientes.FK_ClienteUser', '=', 'users.id_User')
+            ->join('personas', 'personas.FK_PersCliente', '=', 'clientes.Id_Cliente')
+            ->where('Id_User', $id)
+            ->select('personas.Id_Peronsa AS FK_Persona')
+            ->first();
+
+        Log::info('Usuario encontrado: ' . json_encode($user));    
+
         $sedes = DB::table('sedes')
             ->join('personas', 'personas.Id_Peronsa', '=', 'sedes.FK_Persona')
             ->join('clientes', 'clientes.Id_Cliente', '=', 'personas.FK_PersCliente')
             ->select('sedes.*')
-            //->where('FK_Persona', $usuario)
+            ->where('sedes.FK_Persona', $user->FK_Persona)
             ->get();
 
+        if(!$sedes){
+            return response()->json([
+                'message' => 'No tiene sedes registradas.',
+            ], 403);
+        }
         return response()->json([
             'sedes' => $sedes,
         ]);
