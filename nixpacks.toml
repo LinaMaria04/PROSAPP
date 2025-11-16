@@ -1,10 +1,16 @@
 # nixpacks.toml
 
 # Sobreescribe el paso de instalación para usar `npm install` en lugar de `npm ci`.
-# Esto ayuda a resolver problemas con dependencias opcionales/nativas (como Rollup).
 [phases.install]
 cmds = [
     "mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx",
     "composer install --ignore-platform-reqs",
-    "npm install" # Cambiado de 'npm ci' a 'npm install'
+    "npm install"
 ]
+
+# ESTO ES LO NUEVO: Deshabilita el caching para esta fase
+[phases.install.cache]
+# Define los directorios que se excluirán de la caché.
+# Al dejarlo vacío, se desactiva el caching para la fase 'install',
+# forzando que npm install se ejecute completamente.
+paths = []
