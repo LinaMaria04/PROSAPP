@@ -79,8 +79,12 @@ class SolicitudServicioController extends Controller
         $certificado = DB::table('certificados')
             ->join('sedes', 'sedes.Id_Sede', '=', 'certificados.FK_CertGenerSede')
             ->where('certificados.ID_Cert', $id)
-            ->select('certificados.ID_Cert', 'sedes.Direccion')
+            ->select('certificados.ID_Cert', 'sedes.Direccion', 'certificados.CertSrc')
             ->first();
+
+        $urlCertificado = asset('storage/' . $certificado->CertSrc);
+        //$urlCertificado = asset('storage/' . 'certificadosExpress/E-0000035'  . '.pdf');
+
 
         $residuos = DB::table('certificados')
             ->join('solicitud_residuos', 'solicitud_residuos.FK_SolSer', '=', 'certificados.FK_CertSolser')
@@ -94,6 +98,7 @@ class SolicitudServicioController extends Controller
         return response()->json([
             'certificado' => $certificado,
             'residuos' => $residuos,
+            'urlCertificado' => $urlCertificado,
         ]);
     }
 

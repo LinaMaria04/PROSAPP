@@ -123,64 +123,84 @@ class AuthController extends Controller
     }
 
     public function apiLogin(Request $request)
-    {
-        Log::info('Se llamó a apiLogin');
-        Log::info('Intento de inicio de sesión API para: ' . $request->email);
+{
+    Log::info('Se llamó a apiLogin');
+    Log::info('Intento de inicio de sesión API para: ' . $request->email);
 
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        $user = User::where('email', $credentials['email'])->first();
-        $cliente = db::table('clientes')->where('FK_ClienteUser', $user->Id_User)->first();
-        $personas = db::table('personas')->where('FK_PersCliente', $cliente->Id_Cliente)->first();
+    $user = User::where('email', $credentials['email'])->first();
 
-        if(!$personas){
+    if (!$user) {
+        Log::info('Usuario no encontrado: ' . $request->email);
+        return response()->json([
+            'message' => 'Credenciales inválidas.', // Respuesta genérica para seguridad
+        ], 401);
+    }
+
+    if (!Hash::check($credentials['password'], $user->password)) {
+        Log::info('Contraseña incorrecta para: ' . $request->email);
+        return response()->json([
+            'message' => 'Credenciales inválidas.', // Respuesta genérica para seguridad
+        ], 401);
+    }
+
+    if (!$user->email_verified_at) {
+        Log::info('Correo no verificado para: ' . $request->email);
+        return response()->json([
+            'message' => 'Por favor verifica tu correo electrónico.',
+        ], 403);
+    }
+    
+    if (property_exists($user, 'is_active') && !$user->is_active) {
+        Log::info('Cuenta inactiva para: ' . $request->email);
+        return response()->json([
+            'message' => 'Tu cuenta está inactiva. Contacta al administrador.',
+        ], 403);
+    }
+
+    if ($user->UsRol === 'cliente') {
+        
+        $cliente = DB::table('clientes')->where('FK_ClienteUser', $user->Id_User)->first();
+        
+        if (!$cliente) {
+            return response()->json(['message' => 'No se encontró la información de cliente asociada.'], 404);
+        }
+
+        $personas = DB::table('personas')->where('FK_PersCliente', $cliente->Id_Cliente)->first();
+
+        if (!$personas) {
             Log::info('Perfil incompleto para: ' . $request->email);
             return response()->json([
                 'message' => 'Por favor completa tu perfil antes de iniciar sesión.',
                 'user_id' => $user->Id_User,
+                'rol' => $user->UsRol,
                 'cliente' => $cliente->razon_social,
             ], 402);
         }
-
-        if (!$user) {
-            Log::info('Usuario no encontrado: ' . $request->email);
-            return response()->json([
-                'message' => 'El correo electrónico no está registrado.',
-            ], 404);
-        }
-
-        if (!Hash::check($credentials['password'], $user->password)) {
-            Log::info('Contraseña incorrecta para: ' . $request->email);
-            return response()->json([
-                'message' => 'La contraseña es incorrecta.',
-            ], 401);
-        }
-
-        if (!$user->email_verified_at) {
-            Log::info('Correo no verificado para: ' . $request->email);
-            return response()->json([
-                'message' => 'Por favor verifica tu correo electrónico.',
-            ], 403);
-        }
-
-        if (!$user->is_active) {
-            Log::info('Cuenta inactiva para: ' . $request->email);
-            return response()->json([
-                'message' => 'Tu cuenta está inactiva. Contacta al administrador.',
-            ], 403);
-        }
-
-        // Si todo está bien, puedes devolver información del usuario (¡sin la contraseña!)
-        Log::info('Inicio de sesión exitoso para: ' . $request->email);
+        
+        Log::info('Inicio de sesión exitoso para cliente: ' . $request->email);
         return response()->json([
             'message' => 'Login exitoso',
             'user_id' => $user->Id_User,
+            'rol' => $user->UsRol,
             'cliente' => $cliente->razon_social,
         ], 200);
+
     }
+    else {
+        Log::info('Inicio de sesión exitoso para rol: ' . $user->UsRol);
+        return response()->json([
+            'message' => 'Login exitoso',
+            'user_id' => $user->Id_User,
+            'rol' => $user->UsRol,
+            'cliente' => 'PROSARC SA ESP', // Valor por defecto o nombre de la empresa
+        ], 200);
+    }
+}
 
     public function login(Request $request)
     {

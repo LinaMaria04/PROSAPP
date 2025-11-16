@@ -225,6 +225,11 @@ class ProgramacionServiciosController extends Controller
             'certificadosExpress/E-' . sprintf('%07s', $certificado->ID_Cert) . '.pdf',
             $pdf->output()
         );
+
+        $urlcertificado = 'certificadosExpress/E-' . sprintf('%07s', $certificado->ID_Cert) . '.pdf';
+
+        $certificado->CertSrc = $urlcertificado;
+        $certificado->save();
     }
 
 
