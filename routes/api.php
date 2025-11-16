@@ -11,6 +11,7 @@ use App\Http\Controllers\WompiController;
 use App\Http\Controllers\ProgramacionServiciosController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\ReportesController;
 
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -63,6 +64,12 @@ Route::post('/cliente/update/{id}', [ClientesController::class, 'update']);
 Route::get('/cliente/estadisticas/{id}', [ClientesController::class, 'estadisticas']);
 Route::post('/cliente/personacreate/{id}/{clientname}', [ClientesController::class, 'createPerson']);
 Route::get('/cliente/personas/{clientname}', [ClientesController::class, 'getPeopleByClient']);
+
+
+//Rutas de Reportes
+Route::get('/reportes/serviciosrealizados/{clientname}', [ReportesController::class, 'serviciosrealizados']);
+Route::get('/reportes/pagosrealizados/{clientname}', [ReportesController::class, 'pagosrealizados']);
+Route::get('/reportes/registroGeneradores/{clientname}', [ReportesController::class, 'registroGeneradores']);
 
 
 Route::get('/ping', function () {
