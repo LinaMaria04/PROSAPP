@@ -148,6 +148,36 @@ class ClientesController extends Controller
 
     }
 
+    public function getPeopleByClient(string $clienteNombre)
+    {
+        Log::info('Solicitud recibida para la lista de personas para el cliente: ' . $clienteNombre);
+
+        $cliente = DB::table('clientes')
+            ->where('razon_social', $clienteNombre)
+            ->select('Id_Cliente')
+            ->first();
+
+        if (!$cliente) {
+            Log::warning('Razón Social de Cliente no encontrada: ' . $clienteNombre);
+            return response()->json([
+                'message' => 'Razón social no encontrada o inválida.',
+                'personas' => []
+            ], 404);
+        }
+        
+        $personas = DB::table('personas')
+            ->where('FK_PersCliente', $cliente->Id_Cliente)
+            ->get();
+
+        Log::info('Lista de personas obtenida con éxito para el cliente ID: ' . $cliente->Id_Cliente);
+
+        return response()->json([
+            'message' => 'Lista de personas obtenida con éxito.',
+            'personas' => $personas,
+        ], 200);
+
+    }
+
     /**
      * Remove the specified resource from storage.
      */
