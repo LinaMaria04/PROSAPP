@@ -87,3 +87,11 @@ Route::prefix('auth')->middleware(['web'])->group(function () {
     // Paso 2: Datos de acceso
     Route::post('/register/step2', [RegisterController::class, 'storeStep2']);
 });
+
+
+Route::get('/debug-log', function () {
+    if (!file_exists(storage_path('logs/laravel.log'))) {
+        return ['error' => 'No log file found'];
+    }
+    return response()->file(storage_path('logs/laravel.log'));
+});
