@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Personal;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 class ClientesController extends Controller
@@ -141,6 +142,13 @@ class ClientesController extends Controller
         $persona->updated_at = now();
         $persona->DeletePersona = 0;
         $persona->save();
+
+        $user = User::find($id);
+
+        if ($user) {
+            $user->FK_UserPersona = $persona->ID_Personal;
+            $user->save();
+        }
 
         return response()->json([
             'message' => 'Persona creada con exito'
